@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Budget Planner">
 <meta name="description" content="A calm ADHD-friendly budget and daily money planner.">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: blob:; style-src 'unsafe-inline'; font-src data:; script-src 'sha256-WHu9VQHxHGFNjABCb+MfsPTvByGbYHl3HSGzXYq86Qw=' 'sha256-RMklSL4Ia1u8jj8C8C+u46WyaGIuHIF0dO/WSYGzFhc='; connect-src 'self'; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: blob:; style-src 'unsafe-inline'; font-src data:; script-src 'sha256-WHu9VQHxHGFNjABCb+MfsPTvByGbYHl3HSGzXYq86Qw=' 'sha256-0FsDptZ0t1+T7RTUaDBr30ilfwGvxHugAxlWBqGkrCc='; connect-src 'self'; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" href="/icons/planner-192.png" sizes="192x192">
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
@@ -4475,7 +4475,16 @@ h1.screen-title[tabindex]:focus-visible {
      re-opened it. Reported from The month; it was unusable. */
   .app:not([data-route="screen-today"]):not(.sheet-open) .sidebar .panel > :not(.panel-head) { display: none; }
   .app:not([data-route="screen-today"]):not(.sheet-open) .sidebar .panel .card-meta { display: none; }
-  .app:not([data-route="screen-today"]):not(.sheet-open) .sidebar .panel-launch { display: inline-flex; }
+  .app:not([data-route="screen-today"]):not(.sheet-open) .sidebar .panel-launch {
+    display: flex; width: 100%; justify-content: center; min-height: 44px;
+  }
+  /* The collapsed head kept BOTH the "Log a spend" title and the "Log a spend"
+     button, side by side, saying the same words twice. The button is the door;
+     the title stays for screen readers as the section's accessible name. */
+  .app:not([data-route="screen-today"]):not(.sheet-open) .sidebar .panel .card-title {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+  }
   /* Keep the month rail visible on every desktop planning screen. It is both
      a useful year-at-a-glance shortcut and a signature part of this planner's
      visual identity. Narrow tablets and phones still remove it in the
@@ -4510,6 +4519,10 @@ h1.screen-title[tabindex]:focus-visible {
 .sync-good { display: flex; align-items: center; gap: 9px; margin: 18px 0 0; color: var(--positive-label); font-weight: 750; }
 .sync-good span { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--pill-positive-bg); }
 .sync-details { margin-top: 18px; color: var(--muted); }
+.sync-help { margin: 8px 0 0; font-size: var(--text-small); line-height: 1.6; }
+.sync-help a { display: inline-flex; align-items: center; min-height: 44px; color: var(--accent-text); font-weight: 700; text-underline-offset: 3px; }
+.sync-help a:hover { color: var(--accent-hover); }
+.sync-help span { display: block; color: var(--ink-muted); }
 .sync-details summary { cursor: pointer; color: var(--ink); font-weight: 700; }
 .sync-details p { max-width: 62ch; line-height: 1.55; }
 .sync-details > .btn { margin: 8px 8px 0 0; }
@@ -4543,6 +4556,48 @@ h1.screen-title[tabindex]:focus-visible {
 .device-local-warning { margin: 18px 0 4px; padding: 14px; border: 1px solid var(--warn-line); border-radius: 14px; background: var(--warn-bg); color: var(--warn-ink); }
 .device-local-warning p { margin: 6px 0 12px; }
 body.device-dialog-open { overflow: hidden; }
+
+/* DEVICE CARE — the full-screen step that keeps a buyer's numbers. Reuses the
+   device dialog's card; the scrim is the page colour, nearly opaque, so it
+   reads as its own screen rather than a pop-up over the planner. */
+.care-scrim { background: color-mix(in srgb, var(--bg) 94%, var(--ink)); }
+.care-card { max-height: calc(100dvh - 40px); }
+.care-card .eyebrow { margin-bottom: 6px; }
+.care-card h2 { max-width: 14ch; margin-right: 0; }
+.care-card p { max-width: 58ch; margin: 12px 0 0; }
+.care-card p.care-plain { font-size: var(--text-body); font-weight: 600; }
+.care-steps { margin: 16px 0 0; padding: 0 0 0 22px; line-height: 1.5; }
+.care-steps li { margin: 8px 0; }
+.care-steps b { font-weight: 700; }
+.care-note { margin-top: 16px; padding: 13px 14px; border: 1px solid var(--warn-line); border-radius: 14px; background: var(--warn-bg); color: var(--warn-ink); line-height: 1.5; }
+.care-note p { margin: 0; }
+.care-note p + p { margin-top: 8px; }
+.care-fine { color: var(--ink-muted); font-size: var(--text-small); }
+.care-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+body.care-open { overflow: hidden; }
+.recovery-row { margin: 14px 0 16px; padding: 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface-2); }
+.recovery-row .card-note { margin: 0 0 10px; }
+.recovery-row .btn-row { margin: 0; }
+.recovery-row .sync-good { margin: 0 0 6px; }
+.recovery-key { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 2px 0; margin: 22px 0 8px; color: var(--accent); font: 760 clamp(22px, 6.2vw, 30px)/1.3 Manrope, system-ui, sans-serif; letter-spacing: .08em; text-align: center; user-select: all; -webkit-user-select: all; }
+.recovery-group { white-space: nowrap; }
+.recovery-dash { color: var(--ink-muted); padding: 0 .1em; }
+.recovery-key::selection, .recovery-key *::selection { background: var(--pill-accent-bg); }
+.recovery-key-long { margin: 18px 0 8px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); font: 600 13px/1.5 ui-monospace, Menlo, monospace; word-break: break-all; user-select: all; -webkit-user-select: all; }
+.recovery-input { padding: 14px 10px; font-size: clamp(15px, 4.1vw, 22px); letter-spacing: .04em; text-transform: uppercase; }
+.recovery-input::placeholder { color: var(--ink-muted); opacity: .7; }
+.banner--care { gap: 14px; flex-wrap: wrap; }
+.banner--care .banner-text { flex: 1 1 320px; min-width: 0; }
+.banner--care .banner-cta { flex: 0 0 auto; padding: 9px 16px; white-space: nowrap; }
+.data-install, .data-auto { margin: 0 0 14px; padding: 13px 14px; border: 1px solid var(--warn-line); border-radius: 14px; background: var(--warn-bg); }
+.data-install[hidden], .data-auto[hidden] { display: none; }
+.data-install .data-health, .data-auto .data-health { margin: 0 0 10px; color: var(--warn-ink); }
+.data-auto.is-on { border-color: var(--line); background: var(--surface-2); }
+.data-auto.is-on .data-health { color: var(--ink); }
+@media (max-width: 620px) {
+  .care-actions > .btn { width: 100%; }
+  .care-card { max-height: calc(100dvh - 20px); }
+}
 @media (max-width: 620px) {
   .banner-connect { white-space: normal; }
   .sync-choice > .btn, .sync-connected .btn-row > .btn { width: 100%; }
@@ -5025,8 +5080,17 @@ body.device-dialog-open { overflow: hidden; }
   <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2.8v14.4M2.8 10h14.4"/></svg>
   <span class="banner-text">These numbers are an example, so you can see how it works &mdash; the rent, the goals and the balance all belong to a made-up month.</span>
   <button type="button" class="btn btn-primary banner-cta" data-action="start-empty">Start with an empty file</button>
-  <label class="btn btn-ghost" for="restore">Restore from a backup</label>
+  <label class="btn btn-ghost" for="restore">Restore your backup file</label>
   <button type="button" class="banner-x" data-action="keep-example" aria-label="Keep looking at the example">
+    <svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg>
+  </button>
+</div>
+
+<div class="banner banner--care" id="care-banner" role="status" hidden>
+  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2.5l6 2.5v4.5c0 3.6-2.5 6.4-6 7.5-3.5-1.1-6-3.9-6-7.5V5l6-2.5z"/><path d="M7.5 10l1.8 1.8L12.8 8.3"/></svg>
+  <span class="banner-text" data-care-banner-text><b>Want your backup to take care of itself?</b> Pick a file once, and every change saves into it by itself.</span>
+  <button type="button" class="btn btn-primary banner-cta" data-care-banner-cta data-action="care-auto-on">Turn it on</button>
+  <button type="button" class="banner-x" data-action="care-banner-later" aria-label="Not now">
     <svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg>
   </button>
 </div>
@@ -5718,13 +5782,18 @@ body.device-dialog-open { overflow: hidden; }
         <h2 class="eyebrow" id="data-h">Your data</h2>
       </div>
       <p class="card-note">
-        Your planner saves on this device first. If you turn on device sync, an encrypted copy is also stored so your connected devices can stay up to date.
+        Your planner saves on this device first, in the browser&rsquo;s own storage. A browser can clear that storage &mdash; Safari does it after about a week of not opening the planner &mdash; so a backup file is the copy that survives. If you turn on device sync, an encrypted copy is also kept so your connected devices stay up to date.
       </p>
+      <div class="data-install" data-install-health hidden>
+        <p class="data-health"><b>This copy is open in Safari.</b> Safari deletes a website&rsquo;s saved numbers after about a week of not opening it. Adding the planner to your Home Screen (or Dock on a Mac) stops that.</p>
+        <button type="button" class="btn btn-ghost" data-action="care-install-show">Show me how</button>
+      </div>
+      <div class="data-auto" data-auto-backup hidden></div>
       <p class="data-health" data-backup-health>Your first backup has not been downloaded yet.</p>
       <div class="btn-row">
         <button type="button" class="btn btn-ghost" data-action="backup">Download a backup</button>
         <button type="button" class="btn btn-ghost" data-action="export-csv">Export spending CSV</button>
-        <label class="btn btn-ghost" for="restore">Restore from a backup
+        <label class="btn btn-ghost" for="restore">Restore your backup file
           <input type="file" id="restore" accept="application/json" class="sr-only">
         </label>
       </div>
@@ -6483,6 +6552,18 @@ body.device-dialog-open { overflow: hidden; }
 
     <p class="commandbar-foot"><span data-commandbar-foot>&mdash;</span></p>
   </div>
+</div>
+
+<!-- DEVICE CARE — the two things that keep a buyer's numbers from vanishing.
+     One full-screen step, written by renderCare(): on Safari that is not
+     installed, the plain warning about the seven-day wipe and how to stop it;
+     on a computer browser that can write files, the one-click auto-backup
+     offer. Never both, never in the demo, never once the app is installed. -->
+<div class="device-dialog care-screen" data-care-screen hidden>
+  <div class="device-dialog-scrim care-scrim" aria-hidden="true"></div>
+  <section class="device-dialog-card care-card" role="dialog" aria-modal="true" aria-labelledby="care-h">
+    <div data-care-content></div>
+  </section>
 </div>
 
 <!-- tactility has NO markup.
@@ -7786,6 +7867,7 @@ body.device-dialog-open { overflow: hidden; }
     storage.write(S);
     exampleFingerprint = nowFingerprint;
     if (syncClient && syncClient.hasSync()) syncClient.queuePush();
+    if (AutoBackup) AutoBackup.schedule();
   }
   function pad(n) { return (n < 10 ? '0' : '') + n; }
   function isDate(v) { return /^\d{4}-\d{2}-\d{2}$/.test(v); }
@@ -7853,6 +7935,8 @@ body.device-dialog-open { overflow: hidden; }
     var on = $('[data-sync-on]');
     var conflict = $('[data-sync-conflict]');
     var seedConnect = $('#seed-notice [data-action="sync-join"]');
+    var seedRecover = $('#seed-notice [data-action="sync-recover"]');
+    if (seedRecover) seedRecover.hidden = connected || !recoveryReady();
     if (off) off.hidden = connected;
     if (on) on.hidden = !connected;
     if (conflict) conflict.hidden = syncStatus.state !== 'conflict';
@@ -7876,8 +7960,23 @@ body.device-dialog-open { overflow: hidden; }
           : state === 'conflict'
             ? 'The same item changed on both devices. Nothing was erased; choose the version you want below.'
             : state === 'error'
-              ? 'Your planner is still safely saved here. Tap Sync now to try the connection again.'
-              : 'Changes save here first, then update your connected devices automatically.';
+              ? 'Your planner is still saved on this device. Tap Sync now to try the connection again.'
+              : 'Changes save here first, then your encrypted copy online and any connected device are updated automatically.';
+    }
+    var recovery = $('[data-recovery]');
+    if (recovery) {
+      recovery.hidden = !recoveryReady();
+      recovery.innerHTML = !connected
+        ? '<p class="card-note"><strong>Keep a recovery copy.</strong> ' + (passkeyOK
+            ? 'One tap with ' + unlockWord() + ' keeps an encrypted copy online, locked by a passkey in your Apple or Google account. If this device is ever wiped, the same tap brings everything back.'
+            : 'One tap keeps an encrypted copy online and gives you a 20-character recovery key. If this device is ever wiped, the key brings everything back.') + '</p>'
+          + '<div class="btn-row"><button type="button" class="btn btn-primary" data-action="sync-recovery-on">Keep a recovery copy</button>'
+          + '<button type="button" class="btn btn-ghost" data-action="sync-recover">Get my numbers back</button></div>'
+        : '<p class="sync-good"><span aria-hidden="true">&#10003;</span> Recovery copy is on' + (syncClient.hasPasskey && syncClient.hasPasskey() ? ', locked with your passkey.' : '.') + '</p>'
+          + '<p class="card-note">' + (syncClient.hasPasskey && syncClient.hasPasskey()
+              ? 'On any device, <strong>Get my numbers back</strong> with ' + unlockWord() + ' brings everything back, even if this one is wiped.'
+              : 'Your recovery key brings everything back onto any device, even if this one is wiped. Keep it where you will find it.') + '</p>'
+          + '<div class="btn-row"><button type="button" class="btn btn-ghost" data-action="sync-show-key">' + (syncClient.hasPasskey && syncClient.hasPasskey() ? 'Show my backup key' : 'Show my recovery key') + '</button></div>';
     }
     renderSavedStatus();
   }
@@ -8022,6 +8121,7 @@ body.device-dialog-open { overflow: hidden; }
         S = normalize(next);
         storage.write(S);
         exampleFingerprint = ownershipFingerprint(S);
+        if (AutoBackup) AutoBackup.schedule();
         applyMode(); render();
         say('Updated from your other device.');
       },
@@ -8031,6 +8131,189 @@ body.device-dialog-open { overflow: hidden; }
       }
     });
     syncStatus = syncClient.start();
+  }
+
+  /* ------------------------------------------------------- recovery copy
+     The one answer to a wiped browser that needs no second device and no
+     file: an encrypted copy online, opened only by a 20-character key the
+     buyer keeps. It IS device sync — same vault, same encryption — with a
+     name for what it does for a person on one phone. */
+  function recoveryReady() {
+    return !!(syncClient && syncClient.supported());
+  }
+  /* A passkey (Face ID, Touch ID, a fingerprint) can hold the recovery
+     secret on Safari 18+, Chrome, Android and Windows 11 from 2026. Found
+     out once at boot; until then the typed key is offered. */
+  var passkeyOK = false;
+  function unlockWord() {
+    var ua = navigator.userAgent || '';
+    if (isIOS() || /Macintosh/.test(ua)) return 'Face ID or Touch ID';
+    if (/Android/.test(ua)) return 'your fingerprint or face';
+    return 'your fingerprint, face or PIN';
+  }
+  function checkPasskeys() {
+    if (!syncClient || typeof syncClient.passkeyCapable !== 'function') return;
+    syncClient.passkeyCapable().then(function (ok) {
+      passkeyOK = !!ok;
+      if (!passkeyOK) return;
+      renderDeviceSync();
+      var open = $('[data-care-screen]:not([hidden]) [data-care-content]');
+      if (open && careOpen) open.innerHTML = careHtml(careOpen);
+    }).catch(function () {});
+  }
+  function recoveryOn() {
+    return !!(syncClient && syncClient.hasSync());
+  }
+  function recoveryKeyHtml() {
+    var code = syncClient.recoveryCode();
+    var short = syncClient.hasShortRecoveryKey();
+    var spoken = short ? code.split('').join(' ') : 'long recovery code';
+    return short
+      ? '<p class="recovery-key" data-recovery-key aria-label="Recovery key ' + esc(spoken) + '">'
+        + code.split('-').map(function (g) { return '<span class="recovery-group">' + esc(g) + '</span>'; }).join('<span class="recovery-dash">-</span>') + '</p>'
+      : '<p class="recovery-key-long" data-recovery-key>' + esc(code) + '</p>';
+  }
+  function showRecoveryKey(fresh) {
+    if (!recoveryOn()) return;
+    var short = syncClient.hasShortRecoveryKey();
+    var canShare = !!(navigator.share);
+    if (syncClient.hasPasskey && syncClient.hasPasskey()) {
+      deviceDialog('<p class="eyebrow">' + (fresh ? 'Recovery copy is on' : 'Your recovery copy') + '</p>'
+        + '<h2 id="device-dialog-h">Locked with your passkey. Nothing to write down.</h2>'
+        + '<p>If this device is ever wiped, lost or replaced &mdash; or you add the planner to your Home Screen &mdash; tap <strong>Get my numbers back</strong> and use ' + unlockWord() + '. The passkey lives in your Apple or Google account, so a wiped browser does not lose it.</p>'
+        + '<p class="care-fine">Just in case: the same copy also opens with this 20-character key. You only need it if you ever lose your Apple or Google account, or move to a different kind of device.</p>'
+        + recoveryKeyHtml()
+        + '<div class="device-dialog-actions">'
+        + '<button type="button" class="btn btn-primary" data-action="sync-close">Done</button>'
+        + '<button type="button" class="btn btn-ghost" data-action="sync-copy-key">Copy the key</button>'
+        + (canShare ? '<button type="button" class="btn btn-ghost" data-action="sync-share-key">Save to Notes&hellip;</button>' : '')
+        + '</div>'
+        + '<p class="care-fine" data-recovery-copied aria-live="polite"></p>');
+      return;
+    }
+    deviceDialog('<p class="eyebrow">' + (fresh ? 'Recovery copy is on' : 'Your recovery key') + '</p>'
+      + '<h2 id="device-dialog-h">' + (fresh ? 'Now keep this key somewhere you will find it.' : 'Keep this key somewhere you will find it.') + '</h2>'
+      + recoveryKeyHtml()
+      + '<p>' + (short
+          ? 'Twenty letters and digits. Save it in Notes, screenshot it, or write it down. If this device is ever wiped, or you add the planner to your Home Screen, tap <strong>Get my numbers back</strong> and type it in.'
+          : 'Copy this code into Notes or a password app. If this device is ever wiped, tap <strong>Get my numbers back</strong> and paste it.')
+      + '</p>'
+      + '<p class="care-fine">Your numbers are encrypted before they leave this device. Only this key opens them: nobody at the shop can read them, and nobody can bring them back without it. You can see the key again any time in Settings.</p>'
+      + '<div class="device-dialog-actions">'
+      + '<button type="button" class="btn btn-primary" data-action="sync-copy-key">Copy the key</button>'
+      + (canShare ? '<button type="button" class="btn btn-ghost" data-action="sync-share-key">Save to Notes&hellip;</button>' : '')
+      + '<button type="button" class="btn btn-ghost" data-action="sync-close">I&rsquo;ve saved it</button></div>'
+      + '<p class="care-fine" data-recovery-copied aria-live="polite"></p>');
+  }
+  async function startRecoveryCopy(withKey) {
+    if (!recoveryReady()) {
+      return deviceError(new Error('This browser cannot make a secure encrypted copy.'), null);
+    }
+    if (recoveryOn()) return showRecoveryKey(false);
+    if (passkeyOK && !withKey) {
+      deviceDialog('<p class="eyebrow">Recovery copy</p>'
+        + '<h2 id="device-dialog-h">Lock it with ' + unlockWord() + '.</h2>'
+        + '<p>Your device will offer to save a <strong>passkey</strong> for this planner. That passkey is the only thing that opens your encrypted copy &mdash; nothing to write down, no account, no email.</p>'
+        + '<p class="care-fine">It is kept in your Apple or Google account, so it survives a wiped browser, a new phone, and adding the planner to your Home Screen.</p>'
+        + '<div class="device-dialog-actions">'
+        + '<button type="button" class="btn btn-primary" data-action="sync-recovery-passkey">Use ' + unlockWord() + '</button>'
+        + '<button type="button" class="btn btn-ghost" data-action="sync-recovery-key">Use a 20-character key instead</button>'
+        + '</div>');
+      return;
+    }
+    deviceDialog('<p class="eyebrow">Recovery copy</p><h2 id="device-dialog-h">Making your encrypted copy&hellip;</h2><p class="device-wait">This usually takes a moment.</p>');
+    try {
+      await syncClient.createVault();
+      renderDeviceSync();
+      showRecoveryKey(true);
+    } catch (error) { deviceError(error, 'sync-recovery-on'); }
+  }
+  async function startRecoveryPasskey() {
+    if (recoveryOn()) return showRecoveryKey(false);
+    deviceDialog('<p class="eyebrow">Recovery copy</p><h2 id="device-dialog-h">Waiting for ' + unlockWord() + '&hellip;</h2><p class="device-wait">Your device is asking to save a passkey.</p>');
+    try {
+      await syncClient.createVaultWithPasskey();
+      renderDeviceSync();
+      showRecoveryKey(true);
+    } catch (error) {
+      if (error && error.cancelled) return startRecoveryCopy();
+      deviceError(error, 'sync-recovery-passkey');
+    }
+  }
+  async function recoverWithPasskey() {
+    if (!recoveryReady()) return deviceError(new Error('This browser cannot open an encrypted copy.'), null);
+    deviceDialog('<p class="eyebrow">Get my numbers back</p><h2 id="device-dialog-h">Waiting for ' + unlockWord() + '&hellip;</h2><p class="device-wait">Choose the passkey you saved for this planner.</p>');
+    try {
+      await syncClient.connectWithPasskey();
+      renderDeviceSync();
+      recoveredDialog();
+    } catch (error) {
+      if (error && error.cancelled) return openRecoverDialog();
+      deviceError(error, 'sync-recover');
+    }
+  }
+  function recoveredDialog() {
+    deviceDialog('<p class="eyebrow">Welcome back</p><h2 id="device-dialog-h">Everything is back on this device.</h2>'
+      + '<p>Your numbers are here again, and this device stays connected to your recovery copy, so future changes are kept too.</p>'
+      + '<div class="device-dialog-actions"><button type="button" class="btn btn-primary" data-action="sync-close">Done</button></div>');
+  }
+  var recoverPrefill = '';
+  function openRecoverDialog() {
+    var warning = hasCustomerData(S)
+      ? '<div class="device-local-warning"><strong>This device already has a planner.</strong>'
+        + '<p>Getting your numbers back will replace it with your recovery copy. Download a backup first if you want to keep this one.</p>'
+        + '<button type="button" class="btn btn-ghost" data-action="backup">Download a backup first</button></div>'
+      : '';
+    deviceDialog('<p class="eyebrow">Get my numbers back</p>'
+      + (passkeyOK
+          ? '<h2 id="device-dialog-h">Use ' + unlockWord() + ', or type your key.</h2>'
+            + '<p>If you locked your recovery copy with a passkey, one tap brings everything back. Otherwise type the 20-character key the planner showed you. Dashes and capitals do not matter.</p>'
+            + warning
+            + '<div class="device-dialog-actions" style="margin-top:16px"><button type="button" class="btn btn-primary" data-action="sync-recover-passkey">Use ' + unlockWord() + '</button></div>'
+            + '<p class="care-fine" style="margin-top:18px">Or with the key:</p>'
+          : '<h2 id="device-dialog-h">Type or paste your recovery key.</h2>'
+            + '<p>It is the 20-character key the planner showed you when you kept a recovery copy. Dashes and capitals do not matter.</p>'
+            + warning)
+      + '<label class="sr-only" for="device-key-input">Recovery key</label>'
+      + '<input class="device-code-input recovery-input" id="device-key-input" data-sync-key autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="ABCDE-FGHJK-MNPQR-STVWX" value="' + esc(recoverPrefill) + '">'
+      + '<div class="device-dialog-actions"><button type="button" class="btn ' + (passkeyOK ? 'btn-ghost' : 'btn-primary') + '" data-action="sync-submit-key">Get my numbers back with the key</button>'
+      + '<button type="button" class="btn btn-ghost" data-action="sync-close">Cancel</button></div>'
+      + '<p class="care-fine">No key? A backup file works too: <strong>Restore your backup file</strong> is on the first screen and in Settings.</p>');
+  }
+  async function recoverWithKey() {
+    var input = $('[data-sync-key]');
+    var code = input ? input.value : '';
+    recoverPrefill = code;
+    if (!recoveryReady()) return deviceError(new Error('This browser cannot open an encrypted copy.'), null);
+    deviceDialog('<p class="eyebrow">Get my numbers back</p><h2 id="device-dialog-h">Finding your copy&hellip;</h2><p class="device-wait">Opening it on this device.</p>');
+    try {
+      await syncClient.connectRecovery(code);
+      recoverPrefill = '';
+      renderDeviceSync();
+      recoveredDialog();
+    } catch (error) { deviceError(error, 'sync-recover'); }
+  }
+  function copyRecoveryKey(share) {
+    var code = syncClient.recoveryCode();
+    var note = $('[data-recovery-copied]');
+    var text = (P.name || 'Budget and Planner') + ' recovery key: ' + code
+      + '\nOpen ' + (location.origin && /^https?:/.test(location.protocol) ? location.origin + '/' : 'the planner')
+      + ' and tap "Get my numbers back".';
+    if (share && navigator.share) {
+      navigator.share({ title: (P.name || 'Budget and Planner') + ' recovery key', text: text }).catch(function () {});
+      return;
+    }
+    var done = function () { if (note) note.textContent = 'Copied. Paste it into Notes now, before you forget.'; };
+    var fallback = function () {
+      var el = $('[data-recovery-key]');
+      if (el && window.getSelection) {
+        var range = document.createRange(); range.selectNodeContents(el);
+        var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+      }
+      if (note) note.textContent = 'Select the key above and copy it.';
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(code).then(done).catch(fallback);
+    else fallback();
   }
 
   function handleDeviceSync(t) {
@@ -8046,6 +8329,24 @@ body.device-dialog-open { overflow: hidden; }
       openJoinDialog();
     }
     else if (action === 'sync-submit-code') joinWithCode();
+    else if (action === 'sync-recovery-on') {
+      if (!$('[data-device-dialog]:not([hidden])')) deviceDialogReturnFocus = t;
+      startRecoveryCopy();
+    }
+    else if (action === 'sync-recover') {
+      if (!$('[data-device-dialog]:not([hidden])')) deviceDialogReturnFocus = t;
+      openRecoverDialog();
+    }
+    else if (action === 'sync-submit-key') recoverWithKey();
+    else if (action === 'sync-recovery-passkey') startRecoveryPasskey();
+    else if (action === 'sync-recovery-key') startRecoveryCopy(true);
+    else if (action === 'sync-recover-passkey') recoverWithPasskey();
+    else if (action === 'sync-show-key') {
+      if (!$('[data-device-dialog]:not([hidden])')) deviceDialogReturnFocus = t;
+      showRecoveryKey(false);
+    }
+    else if (action === 'sync-copy-key') copyRecoveryKey(false);
+    else if (action === 'sync-share-key') copyRecoveryKey(true);
     else if (action === 'sync-approve') approveDevice();
     else if (action === 'sync-now') {
       syncClient.pull().then(function () {
@@ -8056,7 +8357,7 @@ body.device-dialog-open { overflow: hidden; }
       syncClient.disconnect(); renderDeviceSync(); say('Sync stopped on this device. Your saved planner is still here.');
     }
     else if (action === 'sync-delete-everywhere') {
-      var deleteSync = window.confirm('Delete the encrypted synced copy? Each device keeps the planner saved on it, but the devices will stop updating one another.');
+      var deleteSync = window.confirm('Delete the encrypted copy online? Your recovery key will stop working, and your devices will stop updating one another. Each device keeps the planner saved on it.');
       if (deleteSync) {
         syncClient.deleteVault().then(function () {
           renderDeviceSync(); say('The synced copy was deleted. This device still has its saved planner.');
@@ -8427,6 +8728,8 @@ body.device-dialog-open { overflow: hidden; }
     renderTactility();
     renderShortcuts();
     renderRegister();
+    renderCareSettings();
+    renderCare();
     syncNav();
     renderA11y();
 
@@ -8979,8 +9282,8 @@ body.device-dialog-open { overflow: hidden; }
     setText('[data-nextpay]', np ? 'next: ' + fmtDate(np) : 'no upcoming payday set');
     var lastBackup = S.ui && Number(S.ui.lastBackupAt);
     setText('[data-backup-health]', lastBackup
-      ? 'Last backup: ' + new Date(lastBackup).toLocaleDateString() + '. Browser storage can be cleared, so keep that file safe.'
-      : 'No backup downloaded yet. Browser storage can be cleared, so make one after setup.');
+      ? 'Last backup: ' + new Date(lastBackup).toLocaleDateString() + '. Browser storage can be cleared, so keep that file where you can find it.'
+      : 'No backup file yet. Browser storage can be cleared, so make one after setup.');
   }
 
   var setupExpanded = false;
@@ -15943,6 +16246,7 @@ function a11yKey(ev) {
        with focus on <body>, losing the keyboard user's place entirely. */
     a11y_mark(t, ev);
 
+    if (handleCare(t)) return;
     if (routeScreenAction(t, ev)) return;
 
     if (t.dataset.action === 'add-form-close') {
@@ -16159,6 +16463,11 @@ function a11yKey(ev) {
         syncClient.disconnect();
         syncStatus = syncClient.getStatus();
       }
+      /* The auto-backup file is "the copy that survives" — so erasing must
+         never write the empty planner into it. Turning auto-backup off FIRST
+         leaves the file holding the last good numbers. */
+      var hadAutoBackup = AutoBackup && AutoBackup.status() === 'on';
+      if (hadAutoBackup) AutoBackup.disable();
       /* NOT seed(). "Erase everything, there is no undo" used to hand the buyer
          back the demo budget — $2,500 in checking, three bills, two savings
          goals with $1,205 already in them — persisted, and indistinguishable
@@ -16166,9 +16475,10 @@ function a11yKey(ev) {
       S = blank();
       draft = { amount: 0, category: null, note: '', date: null }; viewOffset = 0; selected = null;
       save(); render(); renderEraseRow(false);
-      say(wasConnected
+      say((wasConnected
         ? 'Erased from this device only. Your other devices were not erased.'
-        : 'Everything erased. This file is empty.');
+        : 'Everything erased. This file is empty.')
+        + (hadAutoBackup ? ' Auto-backup is off; its file still holds your last numbers.' : ''));
     }
     else if (t.dataset.depth !== undefined) {
       S.ui.depth = t.dataset.depth === 'simple' ? 'simple' : 'complete';
@@ -16403,6 +16713,392 @@ function a11yKey(ev) {
     this.value = '';
   });
 
+
+  /* ========================================================== DEVICE CARE
+     Everything a buyer types lives in this browser's storage, and a browser
+     can clear it. Safari (iPhone AND Mac) deletes a website's script-written
+     storage after about seven days of not opening the site; an app opened
+     from the Home Screen or the Dock is exempt from that entirely. Nothing
+     in code beats the rule — persist() is ignored for it — so the only
+     honest answers are: install it, keep a backup file, and never tell the
+     buyer their numbers are "safe" while they sit in the deletable
+     state. Three pieces, all per DEVICE (a buyer's phone and computer are in
+     different situations, so none of this rides along in the synced state):
+
+       AutoBackup   Chrome/Edge on a computer can write to a file the buyer
+                    picked once. Every change re-saves into it ~1.2s later.
+                    Safari and phones cannot do this; the controls never
+                    render there.
+       the care     One full-screen step, shown after setup (or on first open
+       screen       for an existing buyer): on at-risk Safari the plain
+                    warning and the install steps; on a file-writing browser
+                    the one-click auto-backup offer. Dismissals are snoozes,
+                    never permanent — and everything goes silent once the
+                    app is installed, because an installed app is not at risk.
+       honest copy  Settings names the risk in one sentence and shows the
+                    fix for THIS browser.
+
+     The demo never shows any of it: the demo's address is not the one a
+     buyer should install, and a stranger's trial numbers are not at stake. */
+  var CARE_KEY = KEY + '.device-care';
+  var DAY_MS = 86400000;
+  var IS_DEMO = /demo/.test(KEY);
+  var care = (function () {
+    try { return JSON.parse(window.localStorage.getItem(CARE_KEY) || '{}') || {}; }
+    catch (e) { return {}; }
+  })();
+  function careSave() {
+    try { window.localStorage.setItem(CARE_KEY, JSON.stringify(care)); } catch (e) {}
+  }
+  function careSnoozed(field, days) {
+    var at = Number(care[field]) || 0;
+    return at > 0 && (Date.now() - at) < days * DAY_MS;
+  }
+
+  function isSafariBrowser() {
+    var ua = navigator.userAgent || '';
+    return /Safari\//.test(ua) && !/CriOS|FxiOS|EdgiOS|Chrome|Chromium|Edg\/|OPR\//.test(ua);
+  }
+  function isIOS() {
+    var ua = navigator.userAgent || '';
+    return /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  }
+  /* Opened from the Home Screen or the Dock. The one state Safari leaves alone. */
+  function isStandalone() {
+    return navigator.standalone === true
+      || !!(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+  }
+  function isHosted() { return /^https?:$/.test(location.protocol); }
+  function atDeletionRisk() { return isSafariBrowser() && !isStandalone(); }
+
+  /* "Set up" means the buyer's own numbers are in here — the example never
+     counts, and a restored or synced-in planner counts at once. */
+  function careReady() {
+    if (S.seeded) return false;
+    var checks = [
+      !!(S.accounts[0] && S.accounts[0].balance > 0),
+      !!(S.income[0] && S.income[0].amount > 0),
+      !!S.profile.payAnchor,
+      !!(S.bills && S.bills.length)
+    ].filter(Boolean).length;
+    return checks === 4 || (S.transactions || []).length > 0;
+  }
+
+  var AutoBackup = (function () {
+    var supported = typeof window.showSaveFilePicker === 'function' && !!window.indexedDB;
+    var handle = null, status = supported ? 'off' : 'unsupported', timer = null, lastKey = '';
+    var DB = KEY + '.autobackup';
+    function idb() {
+      return new Promise(function (res, rej) {
+        var r = indexedDB.open(DB, 1);
+        r.onupgradeneeded = function () { r.result.createObjectStore('h'); };
+        r.onsuccess = function () { res(r.result); };
+        r.onerror = function () { rej(r.error); };
+      });
+    }
+    function tx(mode, fn) {
+      return idb().then(function (d) {
+        return new Promise(function (res, rej) {
+          var t = d.transaction('h', mode), q = fn(t.objectStore('h'));
+          t.oncomplete = function () { res(q && q.result); };
+          t.onerror = function () { rej(t.error); };
+        });
+      });
+    }
+    /* The stamp the write leaves in S.ui must not itself count as a change,
+       or every write would schedule the next one. */
+    function keyOf(state) {
+      return JSON.stringify(state, function (k, v) { return k === 'lastBackupAt' ? undefined : v; });
+    }
+    function writeNow() {
+      var text = JSON.stringify(S, null, 2);
+      return handle.createWritable()
+        .then(function (w) { return w.write(text).then(function () { return w.close(); }); })
+        .then(function () {
+          status = 'on';
+          S.ui = S.ui || {};
+          S.ui.lastBackupAt = Date.now();
+          storage.write(S);            // the stamp only; no sync push, no reschedule
+          renderCareSettings();
+          return true;
+        })
+        .catch(function () {
+          var firstFailure = status === 'on';
+          status = 'error'; renderCareSettings(); renderCare();
+          if (firstFailure) say('Auto-backup could not write to its file. Choose the file again in Settings and it carries on.');
+          return false;
+        });
+    }
+    function schedule() {
+      if (status !== 'on') return;
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        var k = keyOf(S);
+        if (k === lastKey) return;
+        lastKey = k;
+        writeNow();
+      }, 1200);
+    }
+    function init() {
+      if (!supported) return;
+      tx('readonly', function (st) { return st.get('backup'); }).then(function (h) {
+        if (!h) return;
+        handle = h;
+        return h.queryPermission({ mode: 'readwrite' }).then(function (p) {
+          status = p === 'granted' ? 'on' : 'resume';
+          renderCareSettings();
+          if (status === 'on') { lastKey = ''; schedule(); }
+        });
+      }).catch(function () {});
+    }
+    function enable() {
+      return window.showSaveFilePicker({
+        suggestedName: (P.backupPrefix || 'backup') + '.json',
+        types: [{ description: (P.name || 'Planner') + ' backup', accept: { 'application/json': ['.json'] } }]
+      }).then(function (h) {
+        handle = h; status = 'on'; lastKey = keyOf(S);
+        tx('readwrite', function (st) { return st.put(h, 'backup'); }).catch(function () {});
+        return writeNow();
+      });
+    }
+    function resume() {
+      if (!handle) return Promise.resolve(false);
+      return handle.requestPermission({ mode: 'readwrite' }).then(function (p) {
+        if (p === 'granted') { status = 'on'; lastKey = ''; schedule(); }
+        renderCareSettings();
+        return p === 'granted';
+      }).catch(function () { return false; });
+    }
+    function disable() {
+      tx('readwrite', function (st) { return st.delete('backup'); }).catch(function () {});
+      handle = null; status = supported ? 'off' : 'unsupported';
+      renderCareSettings();
+    }
+    return { supported: supported, init: init, enable: enable, resume: resume, disable: disable,
+             schedule: schedule, status: function () { return status; } };
+  })();
+
+  function installSteps() {
+    var name = P.name || 'the planner';
+    return isIOS()
+      ? '<li>Tap <b>Share</b> at the bottom of Safari (the square with the arrow).</li>'
+        + '<li>Tap <b>Add to Home Screen</b>, then <b>Add</b>.</li>'
+        + '<li>Open ' + esc(name) + ' from that new icon from now on.</li>'
+      : '<li>In Safari&rsquo;s menu bar choose <b>File</b>, then <b>Add to Dock</b>.</li>'
+        + '<li>Open ' + esc(name) + ' from the Dock from now on.</li>';
+  }
+  function careHtml(kind) {
+    var name = esc(P.name || 'the planner');
+    var offerRecovery = recoveryReady() && !recoveryOn();
+    if (kind === 'install') {
+      return '<p class="eyebrow">One thing that matters</p>'
+        + '<h2 id="care-h">Keep your numbers from disappearing</h2>'
+        + '<p class="care-plain">Safari deletes a website&rsquo;s saved numbers after about a week of not opening it. That would wipe everything in here.</p>'
+        + (offerRecovery
+            ? (passkeyOK
+                ? '<p><strong>The quickest protection is one tap with ' + unlockWord() + ':</strong> keep a recovery copy. It is encrypted here, kept online, and opened only by a passkey in your Apple or Google account. If Safari wipes this, the same tap brings everything back.</p>'
+                : '<p><strong>The quickest protection is one tap:</strong> keep a recovery copy. It is encrypted here, kept online, and opened only by a 20-character key you keep. If Safari wipes this, the key brings everything back.</p>')
+            : recoveryOn()
+              ? '<p><strong>Your recovery copy is on.</strong> If Safari wipes this, tap <strong>Get my numbers back</strong>' + (syncClient.hasPasskey && syncClient.hasPasskey() ? ' and use ' + unlockWord() + '.' : ' and type your recovery key.') + '</p>'
+              : '')
+        + '<p>To stop the wiping for good, add ' + name + ' to your ' + (isIOS() ? 'Home Screen' : 'Dock') + ' (ten seconds, once):</p>'
+        + '<ol class="care-steps">' + installSteps() + '</ol>'
+        + '<div class="care-note"><p><b>The new copy starts empty.</b> '
+        + (recoveryOn() || offerRecovery
+            ? 'In the new copy, tap <b>Get my numbers back</b>' + (passkeyOK ? ' and use ' + unlockWord() : ' and type your recovery key') + '. Or download a backup here and restore it there.'
+            : 'Tap <b>Download a backup</b> here first. In the new copy, tap <b>Restore your backup file</b> and pick it.')
+        + '</p></div>'
+        + '<div class="care-actions">'
+        + (offerRecovery
+            ? '<button type="button" class="btn btn-primary" data-action="care-recovery-on">' + (passkeyOK ? 'Keep a copy with ' + unlockWord() : 'Keep a recovery copy') + '</button>'
+              + '<button type="button" class="btn btn-ghost" data-action="backup">Download a backup</button>'
+            : '<button type="button" class="btn btn-primary" data-action="backup">Download a backup</button>')
+        + '<button type="button" class="btn btn-ghost" data-action="care-install-done">I&rsquo;ve added it</button>'
+        + '<button type="button" class="btn btn-ghost" data-action="care-install-later">Not now</button>'
+        + '</div>'
+        + '<p class="care-fine">This message stops on its own once you open the planner from the icon.</p>';
+    }
+    if (kind === 'recover') {
+      return '<p class="eyebrow">One last thing</p>'
+        + '<h2 id="care-h">Keep a recovery copy?</h2>'
+        + (passkeyOK
+            ? '<p class="care-plain">Your numbers live in this browser&rsquo;s storage, and a browser can clear that. One tap with ' + unlockWord() + ' keeps an encrypted copy online.</p>'
+              + '<p>If this device is ever wiped, lost or replaced, the same tap brings everything back. Nobody at the shop can read the copy &mdash; only your passkey opens it. No account, no email, nothing to write down.</p>'
+            : '<p class="care-plain">Your numbers live in this browser&rsquo;s storage, and a browser can clear that. One tap keeps an encrypted copy online and gives you a 20-character recovery key.</p>'
+              + '<p>If this device is ever wiped, lost or replaced, the key brings everything back. Nobody at the shop can read the copy &mdash; only your key opens it. No account, no email.</p>')
+        + '<div class="care-actions">'
+        + '<button type="button" class="btn btn-primary" data-action="care-recovery-on">' + (passkeyOK ? 'Keep a copy with ' + unlockWord() : 'Keep a recovery copy') + '</button>'
+        + '<button type="button" class="btn btn-ghost" data-action="care-recover-later">Maybe later</button>'
+        + '</div>'
+        + '<p class="care-fine">You can turn it on any time in Settings.</p>';
+    }
+    return '<p class="eyebrow">One last thing</p>'
+      + '<h2 id="care-h">Want your backup to take care of itself?</h2>'
+      + '<p class="care-plain">Pick where your backup file lives &mdash; just once. After that, every change you make quietly saves itself into that file a moment later.</p>'
+      + '<p>Your numbers live in this browser&rsquo;s storage, and a browser can clear that. The file is the copy that survives.</p>'
+      + '<div class="care-actions">'
+      + '<button type="button" class="btn btn-primary" data-action="care-auto-on">Turn on auto-backup</button>'
+      + '<button type="button" class="btn btn-ghost" data-action="care-auto-later">Maybe later</button>'
+      + '</div>'
+      + '<p class="care-fine">You can turn it on or off any time in Settings.</p>';
+  }
+  var careOpen = '';
+  var careReturnFocus = null;
+  function openCare(kind, from) {
+    var screen = $('[data-care-screen]');
+    var content = $('[data-care-content]', screen);
+    if (!screen || !content) return;
+    careOpen = kind;
+    careReturnFocus = from || document.activeElement;
+    content.innerHTML = careHtml(kind);
+    screen.hidden = false;
+    document.body.classList.add('care-open');
+    var h = $('#care-h', content);
+    if (h) { h.setAttribute('tabindex', '-1'); setTimeout(function () { h.focus(); }, 0); }
+  }
+  function closeCare() {
+    var screen = $('[data-care-screen]');
+    if (screen) screen.hidden = true;
+    document.body.classList.remove('care-open');
+    careOpen = '';
+    var back = careReturnFocus; careReturnFocus = null;
+    setTimeout(function () {
+      if (back && back.isConnected && typeof back.focus === 'function' && back !== document.body) back.focus();
+    }, 0);
+  }
+  function careShowing() { return !!careOpen; }
+
+  /* Called from render(). Decides whether the step is due; never interrupts
+     an open dialog or sheet, never shows twice. */
+  function careBanner(kind) {
+    var bannerEl = $('#care-banner');
+    if (!bannerEl) return;
+    var text = $('[data-care-banner-text]', bannerEl);
+    var cta = $('[data-care-banner-cta]', bannerEl);
+    if (kind === 'auto') {
+      if (text) text.innerHTML = '<b>Want your backup to take care of itself?</b> Pick a file once, and every change saves into it by itself.';
+      if (cta) { cta.textContent = 'Turn it on'; cta.dataset.action = 'care-auto-on'; }
+    } else if (kind === 'auto-error') {
+      if (text) text.innerHTML = '<b>Auto-backup hit a snag.</b> It could not write to its file. Choose the file again and it carries on.';
+      if (cta) { cta.textContent = 'Choose the file'; cta.dataset.action = 'care-auto-on'; }
+    } else {
+      if (text) text.innerHTML = passkeyOK
+        ? '<b>Keep a recovery copy?</b> One tap with ' + esc(unlockWord()) + ', and a wiped device gets everything back.'
+        : '<b>Keep a recovery copy?</b> One tap, and a 20-character key brings everything back if this device is ever wiped.';
+      if (cta) { cta.textContent = 'Keep a copy'; cta.dataset.action = 'care-recovery-on'; }
+    }
+    bannerEl.hidden = false;
+  }
+  function renderCare() {
+    var bannerEl = $('#care-banner');
+    if (bannerEl) bannerEl.hidden = true;
+    if (IS_DEMO || !isHosted() || !storage.available || careShowing()) return;
+    if ($('[data-device-dialog]:not([hidden])') || $('.app.sheet-open')) return;
+    var daypop = $('[data-daypop]');
+    if (daypop && !daypop.hidden) return;
+    if (!careReady()) return;
+    if (atDeletionRisk()) {
+      /* "Not now" comes back in a week; "I've added it" in a month — a buyer
+         who said so but still opens the Safari tab is still at risk. */
+      if (!careSnoozed('installSnoozedAt', 7) && !careSnoozed('installDoneAt', 30)) openCare('install');
+      return;
+    }
+    if (AutoBackup.supported && AutoBackup.status() === 'error') { careBanner('auto-error'); return; }
+    if (AutoBackup.supported && AutoBackup.status() === 'off') {
+      if (!care.autoOfferedAt) { openCare('auto'); return; }
+      if (!careSnoozed('autoSnoozedAt', 7)) careBanner('auto');
+      return;
+    }
+    if (recoveryReady() && !recoveryOn()) {
+      if (!care.recoverOfferedAt) { openCare('recover'); return; }
+      if (!careSnoozed('recoverSnoozedAt', 7)) careBanner('recover');
+    }
+  }
+
+  /* Settings > Your data: the fix for THIS browser, and the auto-backup row. */
+  function renderCareSettings() {
+    var install = $('[data-install-health]');
+    if (install) install.hidden = IS_DEMO || !isHosted() || !atDeletionRisk();
+    var auto = $('[data-auto-backup]');
+    if (!auto) return;
+    var a = AutoBackup.status();
+    auto.hidden = a === 'unsupported' || IS_DEMO;
+    auto.classList.toggle('is-on', a === 'on');
+    if (auto.hidden) return;
+    auto.innerHTML = a === 'on'
+      ? '<p class="data-health"><b>Auto-backup is on.</b> Every change saves itself into your backup file a moment after you make it.</p>'
+        + '<button type="button" class="btn btn-ghost" data-action="care-auto-off">Turn auto-backup off</button>'
+      : a === 'resume'
+      ? '<p class="data-health"><b>Auto-backup is paused.</b> Your browser wants one click before it keeps writing to your file.</p>'
+        + '<button type="button" class="btn btn-primary" data-action="care-auto-resume">Resume auto-backup</button>'
+      : a === 'error'
+      ? '<p class="data-health"><b>Auto-backup hit a snag.</b> It could not write to its file. Choose the file again and it carries on.</p>'
+        + '<button type="button" class="btn btn-primary" data-action="care-auto-on">Choose the backup file</button>'
+      : '<p class="data-health"><b>This browser can keep a backup file up to date for you.</b> Choose where once, and every change saves itself. Nothing to remember.</p>'
+        + '<button type="button" class="btn btn-primary" data-action="care-auto-on">Turn on auto-backup</button>';
+  }
+
+  function handleCare(t) {
+    var action = t && t.dataset ? t.dataset.action : '';
+    if (!action || action.indexOf('care-') !== 0) return false;
+    if (action === 'care-install-later') {
+      care.installSnoozedAt = Date.now(); careSave(); closeCare();
+      say('Okay. This will come back in a week, unless you open the planner from its icon.');
+    }
+    else if (action === 'care-install-done') {
+      care.installDoneAt = Date.now(); careSave(); closeCare();
+      say('Good. Open the planner from its icon from now on.');
+    }
+    else if (action === 'care-install-show') openCare('install', t);
+    else if (action === 'care-auto-later') {
+      care.autoOfferedAt = care.autoOfferedAt || Date.now();
+      care.autoSnoozedAt = Date.now(); careSave(); closeCare();
+      say('Okay. Auto-backup is waiting in Settings whenever you want it.');
+    }
+    else if (action === 'care-recover-later') {
+      care.recoverOfferedAt = care.recoverOfferedAt || Date.now();
+      care.recoverSnoozedAt = Date.now(); careSave(); closeCare();
+      say('Okay. Keep a recovery copy is waiting in Settings whenever you want it.');
+    }
+    else if (action === 'care-banner-later') {
+      var cta = $('#care-banner [data-care-banner-cta]');
+      if (cta && cta.dataset.action === 'care-recovery-on') care.recoverSnoozedAt = Date.now();
+      else care.autoSnoozedAt = Date.now();
+      careSave();
+      var b = $('#care-banner'); if (b) b.hidden = true;
+    }
+    else if (action === 'care-recovery-on') {
+      care.recoverOfferedAt = care.recoverOfferedAt || Date.now();
+      if (careOpen === 'install') care.installSnoozedAt = Date.now();
+      careSave();
+      if (careShowing()) closeCare();
+      var bn = $('#care-banner'); if (bn) bn.hidden = true;
+      deviceDialogReturnFocus = null;
+      if (passkeyOK) startRecoveryPasskey(); else startRecoveryCopy();
+    }
+    else if (action === 'care-auto-on') {
+      care.autoOfferedAt = care.autoOfferedAt || Date.now(); careSave();
+      AutoBackup.enable().then(function (ok) {
+        if (careShowing()) closeCare();
+        var b = $('#care-banner'); if (b) b.hidden = true;
+        renderCareSettings();
+        say(ok ? 'Auto-backup is on. Your file now keeps itself up to date.'
+               : 'Auto-backup could not write to that file. Nothing has changed.');
+      }).catch(function (err) {
+        if (!err || err.name !== 'AbortError') say('Auto-backup could not start. Nothing has changed.');
+      });
+    }
+    else if (action === 'care-auto-resume') AutoBackup.resume().then(function (ok) {
+      say(ok ? 'Auto-backup is running again.' : 'Auto-backup is still paused.');
+    });
+    else if (action === 'care-auto-off') {
+      AutoBackup.disable();
+      say('Auto-backup is off. The file stays where it is; it just stops updating.');
+    }
+    else return false;
+    return true;
+  }
+
   /* ------------------------------------------------ move from the old home
      The moving page at the old address opens this app with #from-old-planner
      and posts the saved planner across, window to window — the numbers never
@@ -16454,6 +17150,28 @@ function a11yKey(ev) {
     }
     if (e.key === 'Enter' && e.target && e.target.hasAttribute('data-sync-code')) {
       e.preventDefault(); joinWithCode(); return;
+    }
+    if (e.key === 'Enter' && e.target && e.target.hasAttribute('data-sync-key')) {
+      e.preventDefault(); recoverWithKey(); return;
+    }
+    var openCareScreen = $('[data-care-screen]:not([hidden])');
+    if (openCareScreen) {
+      if (e.key === 'Escape') {
+        var escAction = $('[data-action="care-install-later"], [data-action="care-auto-later"], [data-action="care-recover-later"]', openCareScreen);
+        if (escAction) escAction.click();
+        return;
+      }
+      if (e.key === 'Tab') {
+        var careFocus = $$('button:not([disabled]), [href]', openCareScreen)
+          .filter(function (n) { return n.offsetParent !== null; });
+        if (careFocus.length) {
+          var careFirst = careFocus[0], careLast = careFocus[careFocus.length - 1];
+          if (careFocus.indexOf(document.activeElement) === -1) { e.preventDefault(); (e.shiftKey ? careLast : careFirst).focus(); }
+          else if (e.shiftKey && document.activeElement === careFirst) { e.preventDefault(); careLast.focus(); }
+          else if (!e.shiftKey && document.activeElement === careLast) { e.preventDefault(); careFirst.focus(); }
+        }
+      }
+      return;
     }
     var openDeviceDialog = $('[data-device-dialog]:not([hidden])');
     if (openDeviceDialog) {
@@ -16535,6 +17253,8 @@ function a11yKey(ev) {
 
   /* --------------------------------------------------------------- boot */
   initDeviceSync();
+  checkPasskeys();
+  AutoBackup.init();
   applyMode();
   render();
   if (fresh) save();
