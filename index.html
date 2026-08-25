@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Budget Planner">
 <meta name="description" content="A calm ADHD-friendly budget and daily money planner.">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: blob:; style-src 'unsafe-inline'; font-src data:; script-src 'sha256-WHu9VQHxHGFNjABCb+MfsPTvByGbYHl3HSGzXYq86Qw=' 'sha256-0FsDptZ0t1+T7RTUaDBr30ilfwGvxHugAxlWBqGkrCc='; connect-src 'self'; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: blob:; style-src 'unsafe-inline'; font-src data:; script-src 'sha256-WHu9VQHxHGFNjABCb+MfsPTvByGbYHl3HSGzXYq86Qw=' 'sha256-5absvp49O3YTofGhde5yREzPgS/yQNtmxZhK30s51RI='; connect-src 'self'; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" href="/icons/planner-192.png" sizes="192x192">
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
@@ -1093,6 +1093,77 @@ abbr[title] { text-decoration: none; }
 }
 .nav-more { display: none; }
 .app[data-depth="simple"] [data-complete-only] { display: none !important; }
+.app[data-accounts="one"] [data-many-accounts-only] { display: none !important; }
+.app[data-accounts="many"] [data-one-account-only] { display: none !important; }
+
+/* bank accounts card */
+.accounts-list { list-style: none; margin: 14px 0 0; padding: 0; }
+.accounts-row {
+  display: grid; grid-template-columns: 1fr auto; gap: 10px 12px;
+  padding: 12px 0; border-bottom: 1px solid var(--line-card);
+  align-items: start;
+}
+.accounts-row:last-child { border-bottom: 0; }
+.accounts-row .fields { margin: 0; }
+.accounts-remove {
+  min-height: var(--target); min-width: var(--target);
+  align-self: center;
+}
+
+/* account identity: each account borrows one of the six category colour
+   triplets, assigned by position, so both themes come along for free */
+.acct-hue--fun       { --acct-bg: var(--cat-fun-bg);       --acct-ink: var(--cat-fun-ink);       --acct-dot: var(--cat-fun-dot); }
+.acct-hue--gas       { --acct-bg: var(--cat-gas-bg);       --acct-ink: var(--cat-gas-ink);       --acct-dot: var(--cat-gas-dot); }
+.acct-hue--groceries { --acct-bg: var(--cat-groceries-bg); --acct-ink: var(--cat-groceries-ink); --acct-dot: var(--cat-groceries-dot); }
+.acct-hue--coffee    { --acct-bg: var(--cat-coffee-bg);    --acct-ink: var(--cat-coffee-ink);    --acct-dot: var(--cat-coffee-dot); }
+.acct-hue--food      { --acct-bg: var(--cat-food-bg);      --acct-ink: var(--cat-food-ink);      --acct-dot: var(--cat-food-dot); }
+.acct-hue--other     { --acct-bg: var(--cat-other-bg);     --acct-ink: var(--cat-other-ink);     --acct-dot: var(--cat-other-dot); }
+.acct-dot {
+  display: inline-block; width: 8px; height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--acct-dot, var(--cat-other-dot)); flex-shrink: 0;
+}
+
+/* the "paid from" tag on a must-pay row — same body as .envelopes-tag */
+.mustpays-acct {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 10px; border-radius: var(--radius-pill);
+  border: 1px solid var(--chip-edge);
+  background: var(--acct-bg, var(--cat-other-bg));
+  color: var(--acct-ink, var(--cat-other-ink));
+  font-size: var(--text-eyebrow); font-weight: 500;
+  white-space: nowrap; flex-shrink: 0;
+}
+
+/* account chips in the logger — the category chip, wearing an account hue */
+.chip--acct { --chip-bg: var(--acct-bg); --chip-ink: var(--acct-ink); --chip-dot: var(--acct-dot); }
+.chip--acct[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+
+/* by-account card (Today) */
+.byacct-list { list-style: none; margin: 6px 0 0; padding: 0; }
+.byacct-row {
+  display: block;
+  padding: 12px 0; border-bottom: 1px solid var(--line-card);
+}
+.byacct-row:last-child { border-bottom: 0; }
+.byacct-line { display: flex; align-items: baseline; gap: 8px 12px; }
+.byacct-name {
+  flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.byacct-fig { font-weight: 600; }
+.byacct-meter {
+  position: relative; height: 6px; margin-top: 9px;
+  border-radius: var(--radius-pill); background: var(--track-bg);
+  box-shadow: var(--inset-track); overflow: hidden;
+}
+.byacct-meter-fill {
+  height: 100%; border-radius: var(--radius-pill);
+  background: var(--acct-dot, var(--grad-goal-a));
+}
+.byacct-next { margin: 7px 0 0; font-size: var(--text-small); color: var(--ink-muted); }
+.byacct-short { margin: 6px 0 0; color: var(--ink-soft); font-size: .92rem; }
+.byacct-savings { margin: 12px 0 0; color: var(--ink-soft); font-size: .95rem; }
 
 /* logger panel */
 .panel {
@@ -1562,7 +1633,7 @@ abbr[title] { text-decoration: none; }
 }
 .braindump-x:hover { opacity: 1; background: var(--surface); }
 .braindump-x:focus-visible { outline: 0; opacity: 1; box-shadow: 0 0 0 3px var(--focus-halo); }
-@media (max-width: 760px) {
+@media (max-width: 599px), (max-width: 760px) and (max-height: 599px) {
   .braindump-item { padding: 8px 4px 8px 14px; }
 }
 .braindump-empty { padding: 10px 0; font-size: var(--text-small); color: var(--ink-muted); }
@@ -1596,7 +1667,7 @@ abbr[title] { text-decoration: none; }
    no open state at all: the card sat in the sidebar and the top button just
    moved focus to it, which reads as a dead button. Same panel, same markup —
    on a wide screen it comes to the middle with the page dimmed behind it. */
-@media (min-width: 761px) {
+@media (min-width: 761px), (min-width: 600px) and (min-height: 600px) {
   .app.sheet-open::after {
     content: ""; position: fixed; inset: 0; z-index: 35; background: var(--scrim);
   }
@@ -3589,7 +3660,7 @@ html.mode-dark select.input {
   border-radius: 50%; background: var(--accent); vertical-align: middle;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 599px), (max-width: 760px) and (max-height: 599px) {
   .daypop { display: flex; align-items: flex-end; pointer-events: auto; }
   /* On a phone it IS a sheet: dimmed, and the dim is tappable to dismiss. */
   .daypop-scrim { background: var(--scrim); pointer-events: auto; }
@@ -4487,8 +4558,8 @@ h1.screen-title[tabindex]:focus-visible {
   }
   /* Keep the month rail visible on every desktop planning screen. It is both
      a useful year-at-a-glance shortcut and a signature part of this planner's
-     visual identity. Narrow tablets and phones still remove it in the
-     responsive rules below, where the mobile navigation takes over. */
+     visual identity. Windows under 1000px still remove it in the responsive
+     rules below, and genuinely small ones hand over to the compact layout. */
 }
 
 /* ============================================================================
@@ -4627,7 +4698,8 @@ body.care-open { overflow: hidden; }
    only the padding between things, and only when the window is short enough
    to need it. Scoped above 760px so the phone layout below is untouched.
    ============================================================================ */
-@media (min-width: 761px) and (max-height: 1000px) {
+@media (min-width: 761px) and (max-height: 1000px),
+       (min-width: 600px) and (min-height: 600px) and (max-height: 1000px) {
   :root { --pad-card: 18px 24px; }
   .topbar { padding: 12px 30px 10px; }
   .screen-body { padding: 16px 34px 22px; gap: 14px; }
@@ -4640,11 +4712,10 @@ body.care-open { overflow: hidden; }
    a 1400px canvas and scaled it down — so no media query here could ever fire
    and this range did not exist. It does now, and a 900px window is a real
    window: a laptop with a browser at half width, an iPad in portrait.
-   The month rail is the first thing to go — it is a shortcut, not a control.
    ============================================================================ */
-@media (max-width: 1180px) and (min-width: 761px) {
+@media (max-width: 1180px) and (min-width: 761px),
+       (max-width: 1180px) and (min-width: 600px) and (min-height: 600px) {
   body { padding: 20px 12px 32px; }
-  .rail { display: none; }
   .sidebar { width: 244px; }
   .notes-grid { flex-direction: column; gap: 22px; }
   .notes-col--kept { flex: 1 1 auto; }
@@ -4657,12 +4728,31 @@ body.care-open { overflow: hidden; }
   .fields { grid-template-columns: 1fr; }
 }
 
-/* iPad portrait and narrow tablets keep a real navigation rail without forcing
-   desktop content into a 470px horizontal scroller. */
-@media (max-width: 860px) and (min-width: 761px) {
+/* THE MONTH RAIL'S OWN LINE — 1000px, not 1181. The rail is 58px of signature
+   colour and a year-at-a-glance shortcut; an iPad in landscape (1024-1180
+   viewport) has room for it, and hiding it there made the installed app look
+   poorer than the product photos. Below 1000px the 58px starts coming out of
+   the calendar's seven columns, so it goes — in portrait too, which is why
+   this is width-only. Compact layouts also hide it in the phone block below;
+   the overlap is harmless and keeps this rule one line long. */
+@media (max-width: 999px) {
+  .rail { display: none; }
+}
+
+/* iPad portrait, narrow tablets and small windows keep a real navigation rail
+   without forcing desktop content into a 470px horizontal scroller. The floor
+   is 600px of width: below that the sidebar stops paying for the room it takes
+   and the compact layout at the end of this file takes over instead. */
+@media (max-width: 860px) and (min-width: 761px),
+       (max-width: 860px) and (min-width: 600px) and (min-height: 600px) {
   body { padding: 0; }
   .sidebar { width: 190px; padding: 12px 10px 18px; border-bottom-right-radius: 0; }
-  .sidebar .panel, .sidebar .goals, .sidebar .user { display: none; }
+  /* :not(.sheet-open) on the logger for the same reason as the 861px block:
+     the dialog shows this VERY element, so hiding it unconditionally left
+     "Log a spend" setting the open class over an invisible box — a dead
+     button at every width in this band. */
+  .app:not(.sheet-open) .sidebar .panel { display: none; }
+  .sidebar .goals, .sidebar .user { display: none; }
   .brand { padding: 10px 6px 8px; }
   .brand-name { font-size: var(--text-item); letter-spacing: .07em; }
   .nav-item { padding-inline: 10px; }
@@ -4677,14 +4767,33 @@ body.care-open { overflow: hidden; }
 }
 
 /* ============================================================================
-   PHONE
+   COMPACT — the phone layout, chosen by ROOM rather than by device.
    The same markup, re-laid-out. Nothing is duplicated: the sidebar's <nav>
    becomes the bottom tab bar, and the logger — authored as a self-contained
    .panel precisely so this would be possible — becomes a bottom sheet.
    Flex `order` puts the main content first without changing the DOM, so the
    tab order and the heading outline are unaffected.
+
+   THE CONDITION. This used to be a flat `max-width: 760px`, which asked the
+   wrong question. 760 is above every phone in portrait AND above a tablet
+   window that has ample room for the sidebar — an iPad web app opened from the
+   Home Screen gets its own window rather than the whole screen, and any window
+   under 761px lost the entire left navigation even in landscape, where the
+   same iPad in Safari showed it. Two clauses now, and neither one names a
+   device:
+
+     (max-width: 599px)                          genuinely narrow — a phone
+                                                 held upright is 320-440px.
+     (max-width: 760px) and (max-height: 599px)  short AND narrow — a phone
+                                                 turned sideways, ~375-430 tall.
+
+   Everything else — an iPad in either orientation, a home-screen window, a
+   half-width laptop browser — is 600px or wider with 600px of height, and
+   keeps a real left sidebar: full above 860px, the 190px rail below it. The
+   same two clauses live in app.js as window.PLANNER_COMPACT_MEDIA; change one,
+   change the other.
    ============================================================================ */
-@media (max-width: 760px) {
+@media (max-width: 599px), (max-width: 760px) and (max-height: 599px) {
   :where(html) {
     --text-small: 12.5px;
     --text-eyebrow: 11.5px;
@@ -4971,6 +5080,25 @@ body.care-open { overflow: hidden; }
   .panel { max-height: 92dvh; }
   .fab { bottom: calc(64px + env(safe-area-inset-bottom)); padding: 10px 16px; }
 }
+
+/* ============================================================================
+   TOUCH SCREENS — no input under 16px, ever.
+
+   iPhone and iPad Safari ZOOM THE WHOLE PAGE when focus lands in a field whose
+   text is under 16px, and the installed Home Screen app has no address bar to
+   zoom back out with: one tap into Add a bill and the planner was a smeared
+   close-up with the status bar over its own header (reported from an iPad with
+   a hardware keyboard, 24 Aug 2026). The inputmode attributes were never the
+   problem — the font size was. 16px is the documented threshold, so the four
+   input styles that sit below it come up to exactly 16 on touch devices.
+   pointer: coarse, not a width — a phone, an iPad in any orientation and an
+   iPad window of any size all zoom the same way, and a desktop mouse never
+   does, so the desktop design keeps its sizes untouched.
+   ============================================================================ */
+@media (pointer: coarse) {
+  .input, .braindump-input, .daypop-note-input { font-size: 16px; }
+  .recovery-input { font-size: clamp(16px, 4.1vw, 22px); }
+}
 /* A real opening state replaces the unexplained dashes a buyer otherwise sees
    while the application starts. The independent watchdog can turn this into a
    small recovery card even when the main planner script stops early. */
@@ -5202,6 +5330,9 @@ body.care-open { overflow: hidden; }
          she has no way to log. -->
     <div class="chips" role="group" aria-label="Category" data-log-chips></div>
 
+    <div class="chips" role="group" aria-label="From which account"
+         data-log-acct-chips data-many-accounts-only></div>
+
     <p class="field log-field log-note-field">
       <label for="log-note">Note <span class="field-optional">optional</span></label>
       <input id="log-note" class="input" type="text" maxlength="80"
@@ -5310,6 +5441,15 @@ body.care-open { overflow: hidden; }
         <p class="quest-foot" data-quest-foot></p>
       </section>
     </div>
+
+    <section class="card" aria-labelledby="byacct-h" data-many-accounts-only>
+      <div class="card-head">
+        <h2 class="eyebrow" id="byacct-h">By account</h2>
+        <span class="card-meta">safe until payday, account by account</span>
+      </div>
+      <ul class="byacct-list" data-byaccount></ul>
+      <p class="byacct-savings" data-byaccount-savings hidden></p>
+    </section>
 
     
     <!-- Brain dump. Deliberately the ONLY surface in this product with no
@@ -5666,11 +5806,12 @@ body.care-open { overflow: hidden; }
       <p class="card-note">Two numbers do most of the work.</p>
 
       <div class="fields">
-        <p class="field">
+        <p class="field" data-one-account-only>
           <label for="f-checking">In checking right now</label>
           <input id="f-checking" class="input num" type="text" inputmode="decimal"
                  autocomplete="off" data-field="checking" placeholder="0.00">
           <span class="field-note">type it from your bank &mdash; this planner never connects to your bank</span>
+          <span class="field-note" data-checking-note hidden></span>
         </p>
         <p class="field">
           <label for="f-setaside">Already set aside</label>
@@ -5689,6 +5830,26 @@ body.care-open { overflow: hidden; }
           <select id="f-currency" class="input" data-field="currency"></select>
           <span class="field-note">changes the mark and the decimals, not the maths</span>
         </p>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="accounts-h">
+      <div class="card-head">
+        <h2 class="eyebrow" id="accounts-h">Bank accounts</h2>
+        <span class="card-meta">nothing is deleted when you switch back</span>
+      </div>
+      <p class="card-note">Most people keep one. Turn this on if your money lives in more than one place.</p>
+      <div class="segmented" role="group" aria-label="How many bank accounts to plan with">
+        <button type="button" class="seg-btn" data-accounts-mode="one" aria-pressed="true">One account</button>
+        <button type="button" class="seg-btn" data-accounts-mode="many" aria-pressed="false">More than one</button>
+      </div>
+      <div data-many-accounts-only>
+        <p class="card-note">Spending accounts count toward safe to spend. Savings accounts are listed, not counted. Must-pays and logged spending can name the account they come from.</p>
+        <ul class="accounts-list" data-accounts-list></ul>
+        <div class="btn-row">
+          <button type="button" class="btn" data-action="accounts:add">Add an account</button>
+          <button type="button" class="btn" data-action="accounts:undo" data-accounts-undo hidden>Undo</button>
+        </div>
       </div>
     </section>
 
@@ -5811,6 +5972,7 @@ body.care-open { overflow: hidden; }
     <ul>
       <li data-product-name>&mdash;</li>
       <li data-status-saved>saved on this device</li>
+      <li data-app-build>&mdash;</li>
     </ul>
     <span>no account, no subscription</span>
   </footer>
@@ -5888,6 +6050,11 @@ body.care-open { overflow: hidden; }
           <input id="mustpays-day" class="input num" type="text" inputmode="numeric"
                  autocomplete="off" data-mustpays-input="day" placeholder="1">
           <span class="field-note">1 to 31</span>
+        </p>
+        <p class="field" data-many-accounts-only>
+          <label for="mustpays-account">Paid from</label>
+          <select id="mustpays-account" class="input" data-mustpays-input="account" data-account-picker></select>
+          <span class="field-note">the account this comes out of</span>
         </p>
       </div>
 
@@ -6004,6 +6171,11 @@ body.care-open { overflow: hidden; }
           <label for="income-date">The day it lands</label>
           <input id="income-date" class="input" type="date" data-income-input="date">
           <span class="field-note">today, or a day you expect</span>
+        </p>
+        <p class="field" data-many-accounts-only>
+          <label for="income-account">Into which account</label>
+          <select id="income-account" class="input" data-income-input="account" data-account-picker></select>
+          <span class="field-note">where it lands</span>
         </p>
       </div>
 
@@ -6740,6 +6912,51 @@ body.care-open { overflow: hidden; }
 </div>
 <script>window.PRODUCT={"name":"Budget and Planner","shortName":"B&P","storageKey":"budgetandplanner.codex.demo.v1","backupPrefix":"budget-and-planner-demo-backup","legacyStorageKeys":[],"tagline":"no account, no subscription","categories":["Coffee","Food","Groceries","Gas","Transit","Fun","Other"],"funCategories":["Fun","Coffee","Gifts","Going out"],"barSegments":[{"key":"bills","label":"Bills & rent"},{"key":"living","label":"Living & food"},{"key":"fun","label":"Fun & friends"},{"key":"saved","label":"To savings"},{"key":"remaining","label":"Left over"}]};
 /* ============================================================================
+   COMPACT LAYOUT — one definition, shared with app.css.
+
+   "Compact" is the bottom-tab-bar layout. It is decided by the room the window
+   actually has, never by which device is asking: under 600px wide, or a phone
+   held sideways (still under 761px, and under 600px tall). Anything roomier —
+   an iPad in landscape, a home-screen app in its own window, a laptop — keeps
+   the full left sidebar. Any change here must be made in app.css too; the two
+   queries are the same sentence written twice.
+   ============================================================================ */
+window.PLANNER_COMPACT_MEDIA = "(max-width: 599px), (max-width: 760px) and (max-height: 599px)";
+window.isCompactLayout = function () {
+  return !!(window.matchMedia && window.matchMedia(window.PLANNER_COMPACT_MEDIA).matches);
+};
+
+
+/* ============================================================================
+   THE VERSION LINE — Settings' footer names the build it is running.
+
+   Added while chasing an iPadOS 26 typing bug, when three fixes in a row
+   could not be told apart from "the device still has old code". Support can
+   now ask one question — "what does the version line in Settings say" —
+   instead of guessing. Bump it on every release.
+
+   The typing bug itself (the page pans up into blankness when a field takes
+   focus, on an iPad with a hardware keyboard) is Apple's, a regression in
+   iPadOS 26 that Adobe's component team also carries open (react-spectrum
+   #9172). Two correction guards and one prevention scheme shipped here and
+   were reverted on 24 Aug 2026: the corrections changed nothing the buyer
+   could see, and the prevention made the screen feel stuck. Until Apple
+   fixes the OS, this app deliberately does NOTHING about that pan — it
+   recovers by itself in a moment and never touches a number. If it is ever
+   fought again, start from the revert of 2026-08-24.4, not from scratch.
+   ============================================================================ */
+window.PLANNER_BUILD = '2026-08-24.5';
+(function () {
+  /* the tests run this file with partial browser stubs — require the real thing */
+  if (typeof document === 'undefined' || typeof document.addEventListener !== 'function') return;
+  document.addEventListener('DOMContentLoaded', function () {
+    var els = document.querySelectorAll('[data-app-build]');
+    for (var i = 0; i < els.length; i++) {
+      els[i].textContent = 'version ' + window.PLANNER_BUILD;
+    }
+  });
+})();
+/* ============================================================================
    SAFE TO SPEND — engine.
    Pure functions. No DOM, no storage, no globals. Every amount is INTEGER CENTS.
 
@@ -6944,6 +7161,10 @@ body.care-open { overflow: hidden; }
   function balanceSnapshot(state, today, fallback) {
     var asOf = null, asOfMs = null;
     for (var i = 0; i < (state.accounts || []).length; i++) {
+      /* A savings account's stamp must never speak for the spendable money:
+         typing a savings balance would otherwise move the date every spend is
+         measured from, and the hero would read HIGH. */
+      if (state.accounts[i] && state.accounts[i].kind === 'savings') continue;
       if (state.accounts[i] && isoish(state.accounts[i].balanceAsOf)) {
         asOf = state.accounts[i].balanceAsOf;
         asOfMs = Number(state.accounts[i].balanceAsOfMs) || null;
@@ -6959,9 +7180,13 @@ body.care-open { overflow: hidden; }
      due date. That distinction keeps an early payment from disappearing until
      its future due date. Older saves may have no timestamp; treating a paid
      future occurrence as today's event is the conservative migration. */
-  function paidSinceSnapshot(state, asOf, asOfMs, today) {
+  /* `billFilter` is optional: omitted, every bill counts (the global number,
+     unchanged since before accounts had names). The per-account view passes a
+     predicate so each account only subtracts its own ticked-off bills. */
+  function paidSinceSnapshot(state, asOf, asOfMs, today, billFilter) {
     var total = 0, now = Date.now();
     (state.bills || []).forEach(function (bill) {
+      if (billFilter && !billFilter(bill)) return;
       (bill.paidDates || []).forEach(function (dueDate) {
         var paidAt = bill.paidAt && Number(bill.paidAt[dueDate]);
         if (paidAt && paidAt > now) return;
@@ -6984,7 +7209,19 @@ body.care-open { overflow: hidden; }
     var p = period(state, today);
     var pStart = periodStart(state, today);
 
-    var checking = sum(state.accounts, function (a) { return a.balance; });
+    /* More than one spending account: the single-snapshot arithmetic below
+       cannot be right, because each account's balance is true as of ITS OWN
+       typed date. The multi path sums the per-account partitions instead, so
+       the hero always equals the By-account rows added together. Exactly one
+       spending account — every file that existed before accounts had names —
+       takes the original path, unchanged to the bit. */
+    var spendingCount = 0;
+    (state.accounts || []).forEach(function (a) { if (a && a.kind !== 'savings') spendingCount += 1; });
+    if (spendingCount > 1) return safeToSpendMulti(state, today, p, pStart);
+
+    /* Savings accounts are listed, never spendable: only an EXPLICIT 'savings'
+       is excluded, so a malformed kind can never remove money from this number. */
+    var checking = sum(state.accounts, function (a) { return a.kind === 'savings' ? 0 : a.balance; });
 
     /* ------------------------------------------------------------------
        The checking balance is a number the buyer TYPED, true as of the day
@@ -7062,6 +7299,143 @@ body.care-open { overflow: hidden; }
     };
   }
 
+  /** The multi-account global number: the per-account partitions, added up.
+      Each partition measures its rows from its own account's typed date, so
+      this is the honest total — and it is BY CONSTRUCTION the sum of the
+      By-account rows, so the two surfaces can never disagree. */
+  function safeToSpendMulti(state, today, p, pStart) {
+    var monthStart = today.slice(0, 8) + '01';
+    var reservationFrom = cmp(pStart, monthStart) < 0 ? pStart : monthStart;
+    var views = accountViews(state, today);
+    var checking = 0, moneyIn = 0, paidSince = 0, spent = 0;
+    views.forEach(function (v) {
+      if (v.kind === 'savings') return;
+      checking += v.balanceCents; moneyIn += v.moneyIn;
+      paidSince += v.paidSinceCents; spent += v.spentThisPeriod;
+    });
+    /* The reserve list is account-blind on purpose: it is the same set the
+       partitions split between them (exhaustive and exclusive), listed once. */
+    var billsDue = 0, upcoming = [];
+    allBillDates(state.bills, reservationFrom, addDays(p.end, -1)).forEach(function (o) {
+      if (isPaid(o.bill, o.date)) return;
+      billsDue += o.bill.amount;
+      upcoming.push(o);
+    });
+    var setAside = state.setAside || 0;
+    var raw = checking + moneyIn - billsDue - paidSince - setAside - spent;
+    var perDay = Math.floor(Math.max(0, raw) / p.daysLeft);
+    var defId = defaultAccountId(state);
+    var defView = views.filter(function (v) { return v.id === defId; })[0];
+    return {
+      cents: Math.max(0, raw),
+      rawCents: raw,
+      shortfallCents: raw < 0 ? -raw : 0,
+      checking: checking, moneyIn: moneyIn, billsDue: billsDue,
+      paidSinceCents: paidSince, balanceAsOf: defView ? defView.balanceAsOf : pStart,
+      setAside: setAside, spentThisPeriod: spent,
+      perDayCents: perDay, daysLeft: p.daysLeft,
+      periodEnd: p.end, periodStart: pStart, periodAssumed: p.assumed,
+      upcoming: upcoming
+    };
+  }
+
+  /* ------------------------------------------------- accounts (opt-in view) */
+  /** The account money falls back to when a row names no account, names a
+      deleted one, or names a savings account. Always a spending account. */
+  function defaultAccountId(state) {
+    var accts = state.accounts || [];
+    for (var i = 0; i < accts.length; i++) {
+      if (accts[i] && accts[i].kind !== 'savings') return accts[i].id;
+    }
+    return accts[0] ? accts[0].id : null;
+  }
+
+  /** null, a dangling id, and a savings-mapped id all collapse to the default
+      spending account. Same philosophy as the debt→bill link: a dangling
+      reference is surfaced and folded in, never an error and never a loss. */
+  function resolveAccountId(state, accountId) {
+    var accts = state.accounts || [];
+    for (var i = 0; i < accts.length; i++) {
+      if (accts[i] && accts[i].id === accountId) {
+        return accts[i].kind === 'savings' ? defaultAccountId(state) : accts[i].id;
+      }
+    }
+    return defaultAccountId(state);
+  }
+
+  /** balanceSnapshot's clamp rules, for ONE account: its own stamp, clamped to
+      today; no stamp falls to the period-start floor — the conservative
+      direction, same as the global function. */
+  function accountSnapshot(acct, today, fallback) {
+    var asOf = null, asOfMs = null;
+    if (acct && isoish(acct.balanceAsOf)) {
+      asOf = acct.balanceAsOf;
+      asOfMs = Number(acct.balanceAsOfMs) || null;
+    }
+    if (!asOf) { asOf = fallback || today; asOfMs = null; }
+    if (cmp(asOf, today) > 0) asOf = today;
+    return { date: asOf, ms: asOfMs };
+  }
+
+  /** One row per account. Spending accounts carry safeToSpend's exact
+      arithmetic partitioned to the rows that resolve to them; savings
+      accounts carry only their balance. The partition is exhaustive and
+      exclusive, so with equal stamps the rawCents sum to the global number —
+      this view can regroup money, never invent or lose it. */
+  function accountViews(state, today) {
+    var p = period(state, today);
+    var pStart = periodStart(state, today);
+    var monthStart = today.slice(0, 8) + '01';
+    var reservationFrom = cmp(pStart, monthStart) < 0 ? pStart : monthStart;
+    var defId = defaultAccountId(state);
+    var views = [];
+    (state.accounts || []).forEach(function (acct) {
+      if (!acct) return;
+      if (acct.kind === 'savings') {
+        views.push({ id: acct.id, name: acct.name, kind: 'savings', balanceCents: acct.balance });
+        return;
+      }
+      var snap = accountSnapshot(acct, today, pStart);
+      var asOf = snap.date, asOfMs = snap.ms;
+      var from = cmp(asOf, pStart) > 0 ? asOf : pStart;
+      var mine = function (rowAccountId) { return resolveAccountId(state, rowAccountId) === acct.id; };
+
+      var moneyIn = sum(state.moneyIn, function (m) {
+        if (!mine(m.accountId)) return 0;
+        if (cmp(m.date, today) > 0) return 0;
+        return afterSnapshot(m.date, Number(m.createdAt) || null, asOf, asOfMs) ? m.amount : 0;
+      });
+      var billsDue = 0;
+      allBillDates(state.bills, reservationFrom, addDays(p.end, -1)).forEach(function (o) {
+        if (!mine(o.bill.accountId)) return;
+        if (isPaid(o.bill, o.date)) return;
+        billsDue += o.bill.amount;
+      });
+      var paidSince = paidSinceSnapshot(state, asOf, asOfMs, today,
+        function (b) { return mine(b.accountId); });
+      var spent = sum(state.transactions, function (t) {
+        if (!mine(t.accountId)) return 0;
+        if (cmp(t.date, from) < 0 || cmp(t.date, today) > 0) return 0;
+        return afterSnapshot(t.date, Number(t.createdAt) || null, asOf, asOfMs) ? t.amount : 0;
+      });
+      /* The global set-aside is one typed figure that lives in the main
+         account. Charging it once — not to every account — is what keeps the
+         per-account rows summing to the global number. */
+      var setAside = acct.id === defId ? (state.setAside || 0) : 0;
+
+      var raw = acct.balance + moneyIn - billsDue - paidSince - setAside - spent;
+      views.push({
+        id: acct.id, name: acct.name, kind: 'spending',
+        balanceCents: acct.balance,
+        cents: Math.max(0, raw), rawCents: raw,
+        shortfallCents: raw < 0 ? -raw : 0,
+        billsDue: billsDue, moneyIn: moneyIn, paidSinceCents: paidSince,
+        spentThisPeriod: spent, setAside: setAside, balanceAsOf: asOf
+      });
+    });
+    return views;
+  }
+
   /** Today's allowance meter: what is left of today's share. */
   function todayMeter(state, today) { return todayMeterFor(state, today); }
 
@@ -7073,19 +7447,32 @@ body.care-open { overflow: hidden; }
     var pStart = periodStart(state, today);
     var snap = balanceSnapshot(state, today, pStart);
     var from = cmp(snap.date, pStart) > 0 ? snap.date : pStart;
-    var bal = sum(state.accounts, function (a) { return a.balance; });
-
-    bal += sum(state.moneyIn, function (m) {
-      if (cmp(m.date, today) > 0) return 0;
-      return afterSnapshot(m.date, Number(m.createdAt) || null, snap.date, snap.ms)
-        ? m.amount : 0;
-    });
-    bal -= paidSinceSnapshot(state, snap.date, snap.ms, today);
-    bal -= sum(state.transactions, function (t) {
-      if (cmp(t.date, from) < 0 || cmp(t.date, today) > 0) return 0;
-      return afterSnapshot(t.date, Number(t.createdAt) || null, snap.date, snap.ms)
-        ? t.amount : 0;
-    });
+    var bal;
+    var fSpending = 0;
+    (state.accounts || []).forEach(function (a) { if (a && a.kind !== 'savings') fSpending += 1; });
+    if (fSpending > 1) {
+      /* Same rule as safeToSpend: with several spending accounts the opening
+         balance is the sum of per-account partitions, each measured from its
+         own account's typed date. */
+      bal = 0;
+      accountViews(state, today).forEach(function (v) {
+        if (v.kind === 'savings') return;
+        bal += v.balanceCents + v.moneyIn - v.paidSinceCents - v.spentThisPeriod;
+      });
+    } else {
+      bal = sum(state.accounts, function (a) { return a.kind === 'savings' ? 0 : a.balance; });
+      bal += sum(state.moneyIn, function (m) {
+        if (cmp(m.date, today) > 0) return 0;
+        return afterSnapshot(m.date, Number(m.createdAt) || null, snap.date, snap.ms)
+          ? m.amount : 0;
+      });
+      bal -= paidSinceSnapshot(state, snap.date, snap.ms, today);
+      bal -= sum(state.transactions, function (t) {
+        if (cmp(t.date, from) < 0 || cmp(t.date, today) > 0) return 0;
+        return afterSnapshot(t.date, Number(t.createdAt) || null, snap.date, snap.ms)
+          ? t.amount : 0;
+      });
+    }
     var monthStart = today.slice(0, 8) + '01';
     var reservationFrom = cmp(pStart, monthStart) < 0 ? pStart : monthStart;
     var bills = allBillDates(state.bills, reservationFrom, end)
@@ -7425,7 +7812,7 @@ body.care-open { overflow: hidden; }
                text: loggedToday ? 'Spending logged for today' : 'Log anything you spent today',
                done: loggedToday > 0 });
 
-    var hasBalance = sum(state.accounts, function (a) { return a.balance; }) > 0;
+    var hasBalance = sum(state.accounts, function (a) { return a.kind === 'savings' ? 0 : a.balance; }) > 0;
     out.push({ id: 'balance', effort: '1 min',
                text: hasBalance ? 'Checking balance is set' : 'Put in what is actually in checking',
                done: hasBalance });
@@ -7486,6 +7873,8 @@ body.care-open { overflow: hidden; }
     billDates: billDates, allBillDates: allBillDates, isPaid: isPaid,
     period: period, periodStart: periodStart, spentBetween: spentBetween,
     safeToSpend: safeToSpend, todayMeter: todayMeter, forecast: forecast,
+    accountViews: accountViews, defaultAccountId: defaultAccountId,
+    resolveAccountId: resolveAccountId,
     envelopeState: envelopeState,
     monthRange: monthRange, monthEvents: monthEvents,
     daySpend: daySpend, streak: streak, comingUp: comingUp,
@@ -7606,12 +7995,13 @@ body.care-open { overflow: hidden; }
                  plannerTitle: (P && P.name) || 'Budget and Planner',
                  payCycle: 'biweekly', payAnchor: '',
                  currency: S && S.profile ? S.profile.currency : 'USD' },
-      accounts: [{ balance: 0, balanceAsOf: null, balanceAsOfMs: null }], income: [{ label: 'Paycheck', amount: 0 }],
+      accounts: [{ id: 'acct-main', name: '', kind: 'spending', balance: 0, balanceAsOf: null, balanceAsOfMs: null }], income: [{ label: 'Paycheck', amount: 0 }],
       moneyIn: [], bills: [], savings: [], envelopes: [], debts: [], transactions: [],
       notes: {}, brainDump: [], dayNotes: [], setAside: 0, ui: {
         mode: S && S.ui && (S.ui.mode === 'mode-dark' || S.ui.mode === 'mode-light')
           ? S.ui.mode : 'mode-light',
-        depth: S && S.ui && S.ui.depth ? S.ui.depth : 'simple'
+        depth: S && S.ui && S.ui.depth ? S.ui.depth : 'simple',
+        accountsMode: S && S.ui && S.ui.accountsMode === 'many' ? 'many' : 'one'
       }
     };
   }
@@ -7630,7 +8020,7 @@ body.care-open { overflow: hidden; }
       profile: { name: 'Your money', preferredName: '',
                  plannerTitle: (P && P.name) || 'Budget and Planner',
                  payCycle: 'biweekly', payAnchor: E.addDays(first, 2), currency: 'USD' },
-      accounts: [{ balance: 250000 }],
+      accounts: [{ id: 'acct-main', name: '', kind: 'spending', balance: 250000 }],
       income: [{ label: 'Paycheck', amount: 230000 }],
       moneyIn: [],
       bills: [
@@ -7649,7 +8039,7 @@ body.care-open { overflow: hidden; }
       transactions: [],
       notes: {},
       setAside: 30700,
-      ui: { mode: 'mode-light', depth: 'complete' }
+      ui: { mode: 'mode-light', depth: 'complete', accountsMode: 'one' }
     };
   }
 
@@ -7691,7 +8081,11 @@ body.care-open { overflow: hidden; }
                  amount: Math.round(Number(t.amount)),
                  category: String(t.category == null ? 'Other' : t.category),
                  note: String(t.note == null ? '' : t.note).slice(0, 80),
-                 createdAt: isFinite(Number(t.createdAt)) ? Number(t.createdAt) : null };
+                 createdAt: (t.createdAt == null) ? null
+                   : (isFinite(Number(t.createdAt)) ? Number(t.createdAt) : null),
+                 /* Allow-list rebuild: without this line the field would be
+                    dropped on every load. null = the main spending account. */
+                 accountId: typeof t.accountId === 'string' ? t.accountId : null };
       }),
       notes: (s.notes && typeof s.notes === 'object' && !Array.isArray(s.notes)) ? s.notes : {},
       /* A list of loose notes — the only records in the file with no amount,
@@ -7727,7 +8121,7 @@ body.care-open { overflow: hidden; }
       })(s.dayNotes),
       setAside: s.setAside == null ? 0 : s.setAside,
       seeded: s.seeded === true,
-      ui: Object.assign({ mode: 'mode-light', depth: 'complete', monthView: 'calendar' }, s.ui || {})
+      ui: Object.assign({ mode: 'mode-light', depth: 'complete', monthView: 'calendar', accountsMode: 'one' }, s.ui || {})
     };
     if (!E.CURRENCIES[out.profile.currency]) out.profile.currency = 'USD';
     /* Identity fields were added after the first backup format shipped. Keep
@@ -7744,22 +8138,53 @@ body.care-open { overflow: hidden; }
     if (out.ui.mode !== 'mode-light' && out.ui.mode !== 'mode-dark') out.ui.mode = 'mode-light';
     if (out.ui.depth !== 'simple' && out.ui.depth !== 'complete') out.ui.depth = 'complete';
     if (out.ui.monthView !== 'calendar' && out.ui.monthView !== 'list') out.ui.monthView = 'calendar';
+    if (out.ui.accountsMode !== 'many') out.ui.accountsMode = 'one';
     /* Every money field, not just the obvious ones. A backup with a STRING
        amount used to make `billsDue += amount` concatenate: two string bills
        produced "0780002900" and the file reported a $7,797,836 shortfall. */
     var n = function (v) { var x = Number(v); return isFinite(x) ? Math.round(x) : 0; };
-    out.accounts.forEach(function (a) {
+    out.accounts.forEach(function (a, i) {
       a.balance = n(a.balance);
       /* Absent on every file written before this existed. Left null on purpose:
          safeToSpend reads null as "as of today", which is exactly the old
          arithmetic, so an existing file's numbers do not move on upgrade. */
       if (!isDate(a.balanceAsOf)) a.balanceAsOf = null;
-      a.balanceAsOfMs = isFinite(Number(a.balanceAsOfMs)) ? Number(a.balanceAsOfMs) : null;
+      /* The null guard matters: Number(null) is 0, so without it a stored null
+         became 0 on the next load and normalize was not idempotent — which
+         makes every synced device look permanently dirty. 0 and null read the
+         same downstream, but the file must stop changing shape. */
+      a.balanceAsOfMs = (a.balanceAsOfMs == null) ? null
+        : (isFinite(Number(a.balanceAsOfMs)) ? Number(a.balanceAsOfMs) : null);
+      /* The FIRST account's id must be identical on every device: two devices
+         that upgrade independently and then sync merge accounts BY id, and a
+         random id here would union the same account into two rows and double
+         the balance. Only accounts the buyer adds by hand get a random id. */
+      a.id = (typeof a.id === 'string' && a.id) ? a.id : (i === 0 ? 'acct-main' : makeId('a'));
+      /* trim AFTER slice too: slicing a trimmed 41-char name can end on a
+         space, and the next load would trim it again — normalize must reach
+         its fixed point in one pass or every synced device looks dirty. */
+      a.name = String(a.name == null ? '' : a.name).trim().slice(0, 40).trim();
+      /* Anything that is not an explicit 'savings' counts toward safe to
+         spend. The failure direction matters: a malformed kind must never be
+         able to silently remove money from the hero number. */
+      if (a.kind !== 'savings') a.kind = 'spending';
     });
+    /* A file where EVERY account is savings has nowhere for bills, set-aside
+       or spending to live — the partition would drop them all. Unreachable
+       through the UI (the last spending account cannot be removed or flipped),
+       but a hand-edited backup or a synced file must not be able to reach it
+       either: the first account goes back to counting. */
+    if (!out.accounts.some(function (a) { return a && a.kind !== 'savings'; })) {
+      out.accounts[0].kind = 'spending';
+    }
     out.income.forEach(function (i) { i.amount = n(i.amount); });
     out.moneyIn.forEach(function (m) {
       m.amount = n(m.amount);
-      m.createdAt = isFinite(Number(m.createdAt)) ? Number(m.createdAt) : null;
+      m.createdAt = (m.createdAt == null) ? null
+        : (isFinite(Number(m.createdAt)) ? Number(m.createdAt) : null);
+      /* null means "the main spending account" everywhere, so every file
+         written before accounts had names computes exactly as it did. */
+      m.accountId = typeof m.accountId === 'string' ? m.accountId : null;
     });
     out.bills.forEach(function (b) {
       b.amount = n(b.amount);
@@ -7768,6 +8193,8 @@ body.care-open { overflow: hidden; }
       b.paidAt = (b.paidAt && typeof b.paidAt === 'object' && !Array.isArray(b.paidAt)) ? b.paidAt : {};
       if (!b.id) b.id = makeId('b');
       b.name = String(b.name == null ? 'Bill' : b.name);
+      /* null means "paid from the main spending account". */
+      b.accountId = typeof b.accountId === 'string' ? b.accountId : null;
     });
     out.savings.forEach(function (g) {
       g.target = n(g.target); g.saved = n(g.saved); g.monthly = n(g.monthly);
@@ -7850,7 +8277,14 @@ body.care-open { overflow: hidden; }
   function ownershipFingerprint(state) {
     return JSON.stringify({ moneyIn: state.moneyIn || [], bills: state.bills || [],
       savings: state.savings || [], envelopes: state.envelopes || [],
-      debts: state.debts || [], transactions: state.transactions || [] });
+      debts: state.debts || [], transactions: state.transactions || [],
+      /* The account STRUCTURE — names, kinds, how many — is the buyer's work
+         and must claim the file, or pairing a device could silently discard a
+         whole bank-account setup as "still the example". Balances stay out on
+         purpose: typing a balance into the example has never claimed it. */
+      accountShape: (state.accounts || []).map(function (a) {
+        return a ? { name: a.name || '', kind: a.kind || 'spending' } : null;
+      }) });
   }
   var exampleFingerprint = ownershipFingerprint(S);
   function claimFile() { if (S.seeded) { S.seeded = false; } }
@@ -8121,6 +8555,14 @@ body.care-open { overflow: hidden; }
         S = normalize(next);
         storage.write(S);
         exampleFingerprint = ownershipFingerprint(S);
+        /* The whole state was just replaced: the account-undo slot points into
+           the OLD file, and a buyer typing in the accounts list is typing at
+           rows that no longer exist — blur so the list rebuilds honestly. */
+        accounts_lastRemoved = null;
+        if (document.activeElement && document.activeElement.closest
+            && document.activeElement.closest('[data-accounts-list]')) {
+          document.activeElement.blur();
+        }
         if (AutoBackup) AutoBackup.schedule();
         applyMode(); render();
         say('Updated from your other device.');
@@ -8530,7 +8972,7 @@ body.care-open { overflow: hidden; }
          Tab walks out of it by design. Claiming aria-modal in that state told
          a screen-reader user the rest of the page was inert when it was not,
          which is worse than saying nothing. */
-      if (window.matchMedia('(max-width: 760px)').matches) card.setAttribute('aria-modal', 'true');
+      if (window.isCompactLayout()) card.setAttribute('aria-modal', 'true');
       else card.removeAttribute('aria-modal');
       card.setAttribute('tabindex', '-1');
       card.focus();
@@ -8556,7 +8998,7 @@ body.care-open { overflow: hidden; }
 
   function dayPopPlace(from) {
     var card = $('[data-daypop-card]');
-    if (!card || window.matchMedia('(max-width: 760px)').matches) return;
+    if (!card || window.isCompactLayout()) return;
     /* Re-find the day in the CURRENT document rather than trusting the element
        that was clicked. The day handler calls render() first, which rebuilds
        the calendar's innerHTML — so the button we were handed is detached by
@@ -8632,8 +9074,11 @@ body.care-open { overflow: hidden; }
 
   function render() {
     applyDepth();
+    applyAccountsMode();
     applyMonthView();
     renderBrainDump();
+    renderAccounts();
+    renderByAccount();
     var sts = E.safeToSpend(S, TODAY);
     var meter = E.todayMeter(S, TODAY);
     var v = viewYM();
@@ -9246,6 +9691,16 @@ body.care-open { overflow: hidden; }
     $$('.panel .chip[data-cat]').forEach(function (c) {
       c.setAttribute('aria-pressed', String(c.dataset.cat === draft.category));
     });
+    /* A chosen account can vanish between the tap and the log — removed,
+       flipped to savings, or replaced by sync. A dead choice falls back to
+       the main account and SAYS so via the pressed chip, instead of showing
+       no chip chosen while silently writing to main. */
+    if (draft.accountId && E.resolveAccountId(S, draft.accountId) !== draft.accountId) {
+      draft.accountId = null;
+    }
+    $$('.panel .chip[data-log-acct]').forEach(function (c) {
+      c.setAttribute('aria-pressed', String((c.dataset.logAcct || '') === (draft.accountId || '')));
+    });
     var go = $('[data-action="log-spend"]');
     if (go) go.disabled = draft.amount === 0;
     setText('[data-user-name]', String(S.profile.preferredName || '').trim() || 'Your planner');
@@ -9264,8 +9719,30 @@ body.care-open { overflow: hidden; }
         return '<option value="' + k + '">' + k + '  ' + E.CURRENCIES[k].sym + '</option>';
       }).join('');
     }
+    /* The field shows what it WRITES — the main spending account's balance —
+       never the all-accounts total. Showing the total here once made typing
+       $650 re-render as $1,150 the moment a second account existed: a field
+       that can never hold what the buyer typed. For every single-account file
+       the two numbers are the same figure. */
+    var mainAcct = (function () {
+      var id = E.defaultAccountId(S);
+      return S.accounts.filter(function (a) { return a && a.id === id; })[0] || S.accounts[0];
+    })();
+    var others = 0;
+    S.accounts.forEach(function (a) {
+      if (a && a.kind !== 'savings' && a !== mainAcct) others += a.balance;
+    });
+    var checkNote = $('[data-checking-note]');
+    if (checkNote) {
+      var showNote = (!S.ui || S.ui.accountsMode !== 'many') && others !== 0;
+      checkNote.hidden = !showNote;
+      if (showNote) {
+        checkNote.textContent = 'plus ' + money(others) + ' in other accounts you set up — '
+          + 'switch Bank accounts to "More than one" to see or edit them';
+      }
+    }
     var vals = {
-      checking: editable(sts.checking, cur),
+      checking: editable(mainAcct ? mainAcct.balance : 0, cur),
       setAside: editable(S.setAside || 0, cur),
       income: editable((S.income[0] && S.income[0].amount) || 0, cur),
       preferredName: S.profile.preferredName || '',
@@ -9306,7 +9783,7 @@ body.care-open { overflow: hidden; }
     var card = $('[data-setup-card]');
     if (!card) return;
     var checks = {
-      checking: !!(S.accounts[0] && S.accounts[0].balance > 0),
+      checking: S.accounts.some(function (a) { return a && a.kind !== 'savings' && a.balance > 0; }),
       income: !!(S.income[0] && S.income[0].amount > 0),
       payday: !!S.profile.payAnchor,
       bill: !!(S.bills && S.bills.length)
@@ -9632,6 +10109,11 @@ function mustpays_editHtml(r) {
     + '<input id="mustpays-edit-day" class="input num" type="text" inputmode="numeric"'
     + ' autocomplete="off" data-mustpays-input="edit-day"'
     + ' value="' + esc(String(Math.min(31, Math.max(1, mustpays_cents(b.dueDay) || 1)))) + '"></p>'
+    + (S.ui && S.ui.accountsMode === 'many'
+      ? '<p class="field"><label for="mustpays-edit-account">Paid from</label>'
+        + '<select id="mustpays-edit-account" class="input" data-mustpays-input="edit-account">'
+        + accounts_pickerOptions(b.accountId) + '</select></p>'
+      : '')
     + '</div>'
     + '<div class="mustpays-acts">'
     + '<button type="button" class="btn btn-primary" data-action="mustpays:save"'
@@ -9668,6 +10150,13 @@ function mustpays_rowHtml(r) {
   var meta = (when ? '<span>' + esc(when) + '</span>' : '')
     + '<span' + (when ? ' class="mustpays-rec"' : '') + '>'
     + esc(mustpays_recurrenceLine(b)) + '</span>';
+  /* In many-accounts mode every row says which account it comes out of —
+     the mapping the buyer set must be visible where the bills live, not
+     only inside the edit form. Resolved, so an unmapped bill shows the
+     main account rather than showing nothing. */
+  if (S.ui && S.ui.accountsMode === 'many') {
+    meta += accounts_tagHtml(E.resolveAccountId(S, b.accountId));
+  }
 
   return '<li class="mustpays-row' + (r.state === 'paid' ? ' mustpays-row--paid' : '') + '">'
     + mustpays_calHtml(r)
@@ -9806,7 +10295,10 @@ function mustpays_undo() {
     msg = mustpays_name(c.item) + ' is back.';
   } else if (c.verb === 'edit') {
     b = mustpays_find(c.item.id);
-    if (b) { b.name = c.item.name; b.amount = c.item.amount; b.dueDay = c.item.dueDay; }
+    if (b) {
+      b.name = c.item.name; b.amount = c.item.amount; b.dueDay = c.item.dueDay;
+      b.accountId = (typeof c.item.accountId === 'string') ? c.item.accountId : null;
+    }
     msg = mustpays_name(c.item) + ' is back as it was.';
   } else if (c.verb === 'toggle') {
     b = mustpays_find(c.item.id);
@@ -9883,8 +10375,10 @@ function handleMustpays(t, ev) {
       return true;
     }
 
+    var acctSel = $('[data-mustpays-input="account"]');
     b = { id: makeId('b'), name: name, amount: cents,
-          dueDay: day, recurrence: 'monthly', paidDates: [], paidAt: {} };
+          dueDay: day, recurrence: 'monthly', paidDates: [], paidAt: {},
+          accountId: (acctSel && acctSel.value) ? acctSel.value : null };
     if (!S.bills) S.bills = [];
     S.bills.push(b);
     mustpays_lastChange = { verb: 'add', item: b, index: S.bills.length - 1 };
@@ -9938,8 +10432,11 @@ function handleMustpays(t, ev) {
     if (!day) { dayEl.focus(); say('Pick a day from 1 to 31.'); return true; }
 
     mustpays_lastChange = { verb: 'edit', index: mustpays_indexOf(id),
-                            item: { id: b.id, name: b.name, amount: b.amount, dueDay: b.dueDay } };
+                            item: { id: b.id, name: b.name, amount: b.amount, dueDay: b.dueDay,
+                                    accountId: b.accountId } };
     b.name = name; b.amount = cents; b.dueDay = day;
+    var acctEditSel = $('[data-mustpays-input="edit-account"]');
+    if (acctEditSel) b.accountId = acctEditSel.value || null;
     mustpays_editing = null;
     save(); render();
     say(name + ' saved — ' + money(cents) + ' on the ' + mustpays_ordinal(day) + '.');
@@ -10239,6 +10736,14 @@ function income_editHtml(r) {
     + '<p class="field"><label for="income-edit-date">The day it lands</label>'
     + '<input id="income-edit-date" class="input" type="date"'
     + ' data-income-input="edit-date" value="' + esc(r.date) + '"></p>'
+    + (S.ui && S.ui.accountsMode === 'many'
+      ? (function () {
+          var raw = S.moneyIn.filter(function (m) { return m.id === r.key; })[0];
+          return '<p class="field"><label for="income-edit-account">Into which account</label>'
+            + '<select id="income-edit-account" class="input" data-income-input="edit-account">'
+            + accounts_pickerOptions(raw ? raw.accountId : null) + '</select></p>';
+        })()
+      : '')
     + '</div>'
     + '<div class="income-acts">'
     + '<button type="button" class="btn btn-primary" data-action="income:save"'
@@ -10397,6 +10902,7 @@ function income_undoOne() {
       target.label = c.item.label;
       target.amount = c.item.amount;
       target.date = c.item.date;
+      target.accountId = (typeof c.item.accountId === 'string') ? c.item.accountId : null;
       msg = income_label(target) + ' is back as it was.';
     }
   }
@@ -10458,8 +10964,10 @@ function handleIncome(t, ev) {
     }
 
     var arrivedAt = Date.now();
+    var intoSel = $('[data-income-input="account"]');
     row = { id: makeId('m'), date: date,
-            amount: cents, label: label, createdAt: arrivedAt };
+            amount: cents, label: label, createdAt: arrivedAt,
+            accountId: (intoSel && intoSel.value) ? intoSel.value : null };
     if (!S.moneyIn) S.moneyIn = [];
     S.moneyIn.push(row);
     income_lastChange = { verb: 'add', item: row, key: row.id, index: S.moneyIn.length - 1 };
@@ -10513,8 +11021,11 @@ function handleIncome(t, ev) {
     if (!isDate(date)) { dateEl.focus(); say('Pick the day it lands.'); return true; }
 
     income_lastChange = { verb: 'edit', ref: row, index: income_indexOf(key),
-                          item: { label: row.label, amount: row.amount, date: row.date } };
+                          item: { label: row.label, amount: row.amount, date: row.date,
+                                  accountId: row.accountId } };
     row.label = label; row.amount = cents; row.date = date;
+    var intoEditSel = $('[data-income-input="edit-account"]');
+    if (intoEditSel) row.accountId = intoEditSel.value || null;
     income_editing = null;
     save(); render();
     say(label + ' saved — ' + money(cents) + ' on ' + fmtDate(date) + '.');
@@ -14060,7 +14571,7 @@ function handleDebt(t, ev) {
         inp.setAttribute('aria-activedescendant', '');
       }
       if (foot) {
-        foot.textContent = window.matchMedia('(max-width: 760px)').matches
+        foot.textContent = window.isCompactLayout()
           ? 'Tap Log it to save · nothing has been saved yet'
           : 'Enter logs it · Esc goes back · nothing has been saved';
       }
@@ -14087,7 +14598,7 @@ function handleDebt(t, ev) {
         commandbar_rows.length ? 'commandbar-r' + commandbar_index : '');
     }
     if (foot) {
-      var mobile = window.matchMedia('(max-width: 760px)').matches;
+      var mobile = window.isCompactLayout();
       if (m.needsCategory) {
         foot.textContent = mobile
           ? 'Tap a category to log ' + money(m.amountCents) + ' · nothing saved yet'
@@ -16082,6 +16593,7 @@ function a11yKey(ev) {
      here rather than by each screen: one delegated listener, always. */
   function routeScreenAction(t, ev) {
     if (handleDeviceSync(t, ev)) return true;
+    if (handleAccounts(t, ev)) return true;
     if (handleMustpays(t, ev)) return true;
     if (handleIncome(t, ev)) return true;
     if (handleGoals(t, ev)) return true;
@@ -16125,7 +16637,7 @@ function a11yKey(ev) {
         /* On a phone the nav is a horizontally scrolling bar that cannot show
            all eight at once. inline:'nearest' scrolls the bar only — block:
            'nearest' stops it dragging the page along with it. */
-        if (a.scrollIntoView && window.matchMedia('(max-width: 760px)').matches) {
+        if (a.scrollIntoView && window.isCompactLayout()) {
           try { a.scrollIntoView({ inline: 'nearest', block: 'nearest' }); } catch (e) {}
         }
       } else a.removeAttribute('aria-current');
@@ -16145,6 +16657,9 @@ function a11yKey(ev) {
     });
     $$('[data-depth]').forEach(function (b) {
       b.setAttribute('aria-pressed', String(b.dataset.depth === (S.ui.depth || 'complete')));
+    });
+    $$('[data-accounts-mode]').forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b.dataset.accountsMode === (S.ui.accountsMode || 'one')));
     });
   }
   window.addEventListener('hashchange', function () {
@@ -16228,7 +16743,8 @@ function a11yKey(ev) {
   document.addEventListener('click', function (ev) {
     var t = ev.target.closest(
       '[data-add],[data-reset],[data-cat],[data-action],[data-day],[data-mode],[data-depth],[data-view],'
-      + '[data-month],[data-note-del],[data-undo],[data-thing],[data-quick]');
+      + '[data-month],[data-note-del],[data-undo],[data-thing],[data-quick],[data-accounts-mode],'
+      + '[data-log-acct]');
     if (!t) return;
 
     /* A <select> is routed on `change` below, never here. Opening one IS a
@@ -16309,7 +16825,7 @@ function a11yKey(ev) {
         setTimeout(function () { setAddForm('mustpays', true, '[data-mustpays-input="name"]'); }, 80);
       } else {
         location.hash = '#screen-settings';
-        var selector = target === 'checking' ? '[data-field="checking"]'
+        var selector = target === 'checking' ? checkingFieldSelector()
           : target === 'income' ? '[data-field="income"]' : '[data-field="payAnchor"]';
         setTimeout(function () { var field = $(selector); if (field) { field.scrollIntoView({ block: 'center' }); field.focus(); } }, 80);
       }
@@ -16343,6 +16859,12 @@ function a11yKey(ev) {
     else if (t.hasAttribute('data-reset')) { draft = { amount: 0, category: null, note: '', date: null }; renderLogger(); }
     else if (t.dataset.cat) {
       draft.category = draft.category === t.dataset.cat ? null : t.dataset.cat;
+      renderLogger();
+    }
+    else if (t.dataset.logAcct !== undefined) {
+      /* Not a toggle: one account is always the answer, so tapping the one
+         already chosen keeps it chosen. */
+      draft.accountId = t.dataset.logAcct || null;
       renderLogger();
     }
     else if (t.dataset.action === 'daypop:close') { dayPopClose(); }
@@ -16393,7 +16915,8 @@ function a11yKey(ev) {
       var loggedAt = Date.now();
       var tx = { id: makeId('t'), date: (isDate(draft.date) ? draft.date : TODAY),
                  amount: draft.amount, category: draft.category || 'Other',
-                 note: String(draft.note || '').trim().slice(0, 80), createdAt: loggedAt };
+                 note: String(draft.note || '').trim().slice(0, 80), createdAt: loggedAt,
+                 accountId: draft.accountId || null };
       S.transactions.push(tx);
       offerUndo(tx);
       draft = { amount: 0, category: null, note: '', date: null };
@@ -16430,11 +16953,12 @@ function a11yKey(ev) {
          demo budget here is what made the example inescapable. */
       S = blank();
       draft = { amount: 0, category: null, note: '', date: null }; viewOffset = 0; selected = null;
+      accounts_lastRemoved = null;
       save(); render();
       location.hash = '#screen-settings';
       say('Empty file. Four small setup steps are ready in Settings.');
       setTimeout(function () {
-        var f = $('[data-field="checking"]');
+        var f = $(checkingFieldSelector());
         if (f) { f.scrollIntoView({ block: 'center' }); f.focus(); }
       }, 80);
     }
@@ -16474,6 +16998,7 @@ function a11yKey(ev) {
          from their own data. Erase means empty. */
       S = blank();
       draft = { amount: 0, category: null, note: '', date: null }; viewOffset = 0; selected = null;
+      accounts_lastRemoved = null;
       save(); render(); renderEraseRow(false);
       say((wasConnected
         ? 'Erased from this device only. Your other devices were not erased.'
@@ -16493,6 +17018,14 @@ function a11yKey(ev) {
       applyMode();
       save(); syncNav();
     }
+    else if (t.dataset.accountsMode !== undefined) {
+      S.ui.accountsMode = t.dataset.accountsMode === 'many' ? 'many' : 'one';
+      applyAccountsMode();
+      save(); render(); syncNav();
+      say(S.ui.accountsMode === 'many'
+        ? 'Planning with more than one account. Name your accounts below — nothing is deleted if you switch back.'
+        : 'Planning with one account. Your other accounts still count toward safe to spend — switch back any time to see or edit them.');
+    }
   });
 
   /* mode is a class on <html>; assigning className would wipe anything else
@@ -16506,6 +17039,333 @@ function a11yKey(ev) {
   function applyDepth() {
     var app = $('.app');
     if (app) app.dataset.depth = S.ui && S.ui.depth === 'simple' ? 'simple' : 'complete';
+  }
+
+  function applyAccountsMode() {
+    var app = $('.app');
+    if (app) app.dataset.accounts = S.ui && S.ui.accountsMode === 'many' ? 'many' : 'one';
+  }
+
+  /* ------------------------------------------------------------ accounts */
+  /* Opt-in. In 'one' mode nothing on any screen changes — the gate is CSS
+     ([data-many-accounts-only] / [data-one-account-only]) plus the fact that
+     every stored accountId stays null until the buyer names an account. */
+  var accounts_lastRemoved = null;   /* single-slot undo: the last removed account */
+
+  function accounts_find(id) {
+    return S.accounts.filter(function (a) { return a && a.id === id; })[0] || null;
+  }
+
+  /* Each account borrows one of the six category colour triplets, derived
+     from its ID — stored nowhere, stable everywhere. Position was the first
+     cut and it recoloured every later account the moment one was removed;
+     a colour that quietly changes meaning is worse than two accounts that
+     occasionally share one (the name is always beside the dot). The main
+     account's fixed id lands every file's main account on the same hue. */
+  var ACCT_HUES = ['fun', 'gas', 'groceries', 'coffee', 'food', 'other'];
+  function accounts_hue(id) {
+    var sum = 0, s = String(id || '');
+    for (var i = 0; i < s.length; i++) sum = (sum + s.charCodeAt(i)) % 997;
+    return ACCT_HUES[sum % ACCT_HUES.length];
+  }
+
+  /** The "paid from" pill: dot + account name, in that account's colour. */
+  function accounts_tagHtml(id) {
+    return '<span class="mustpays-acct acct-hue--' + accounts_hue(id) + '">'
+      + '<i class="acct-dot" aria-hidden="true"></i>'
+      + esc(accounts_label(accounts_find(id))) + '</span>';
+  }
+
+  /* Where "go type your balance" should land. In many-accounts mode the
+     single checking field is hidden, so pointing focus at it would drop the
+     buyer on Settings with nothing focused — a silent dead end. */
+  function checkingFieldSelector() {
+    if (S.ui && S.ui.accountsMode === 'many') {
+      return '[data-account-balance="' + (E.defaultAccountId(S) || '') + '"]';
+    }
+    return '[data-field="checking"]';
+  }
+  /* An unnamed account still needs a name a person can tell apart — two rows
+     both called "Checking" are indistinguishable on screen and to a screen
+     reader. The first unnamed account is "Checking"; later ones are numbered. */
+  function accounts_label(a) {
+    if (a && a.name) return a.name;
+    var idx = -1;
+    for (var i = 0; i < S.accounts.length; i++) {
+      if (S.accounts[i] && a && S.accounts[i].id === a.id) { idx = i; break; }
+    }
+    return idx > 0 ? 'Account ' + (idx + 1) : 'Checking';
+  }
+
+  function accounts_rowHtml(a) {
+    var id = esc(String(a.id));
+    var kindSel = a.kind === 'savings';
+    return '<li class="accounts-row" data-account-row="' + id + '">'
+      + '<div class="fields">'
+      + '<p class="field"><label for="acct-name-' + id + '">Account name</label>'
+      + '<input id="acct-name-' + id + '" class="input" type="text" maxlength="40" autocomplete="off"'
+      + ' data-account-name="' + id + '" placeholder="Checking" value="' + esc(a.name || '') + '">'
+      + '<span class="field-note">the name your bank uses, or your own nickname</span></p>'
+      + '<p class="field"><label for="acct-kind-' + id + '">What it is</label>'
+      + '<select id="acct-kind-' + id + '" class="input" data-action="accounts:kind" data-account-id="' + id + '">'
+      + '<option value="spending"' + (kindSel ? '' : ' selected') + '>Spending &mdash; counts toward safe to spend</option>'
+      + '<option value="savings"' + (kindSel ? ' selected' : '') + '>Savings &mdash; listed, not counted</option>'
+      + '</select></p>'
+      + '<p class="field"><label for="acct-bal-' + id + '">Balance right now</label>'
+      + '<input id="acct-bal-' + id + '" class="input num" type="text" inputmode="decimal" autocomplete="off"'
+      + ' data-account-balance="' + id + '" placeholder="0.00" value="' + esc(editable(a.balance, S.profile.currency)) + '">'
+      + '<span class="field-note">type it from your bank</span></p>'
+      + '</div>'
+      + '<button type="button" class="btn btn-ghost accounts-remove" data-action="accounts:remove"'
+      + ' data-account-id="' + id + '" aria-label="Remove ' + esc(accounts_label(a)) + '">Remove</button>'
+      + '</li>';
+  }
+
+  /* Options for a "which account" picker: the main account first (stored as
+     null, so a file that never went multi-account stays byte-identical), then
+     every other SPENDING account by name. Savings accounts never appear —
+     money does not get spent out of a listed-not-counted account. */
+  function accounts_pickerOptions(selectedId) {
+    var defId = E.defaultAccountId(S);
+    var sel = selectedId && selectedId !== defId ? accounts_find(selectedId) : null;
+    var explicit = (sel && sel.kind !== 'savings') ? selectedId : null;
+    var html = '<option value=""' + (explicit ? '' : ' selected') + '>'
+      + esc(accounts_label(accounts_find(defId))) + '</option>';
+    S.accounts.forEach(function (a) {
+      if (!a || a.kind === 'savings' || a.id === defId) return;
+      html += '<option value="' + esc(a.id) + '"' + (explicit === a.id ? ' selected' : '') + '>'
+        + esc(accounts_label(a)) + '</option>';
+    });
+    return html;
+  }
+
+  function renderAccountPickers() {
+    $$('select[data-account-picker]').forEach(function (sel) {
+      if (sel === document.activeElement) return;
+      sel.innerHTML = accounts_pickerOptions(sel.value || null);
+    });
+    renderLoggerAcctChips();
+  }
+
+  /* The logger speaks in one-tap chips, so the account choice does too — the
+     same component as the category chips right above it, wearing each
+     account's colour. Main first (stored as null), then the rest. */
+  function renderLoggerAcctChips() {
+    var wrap = $('[data-log-acct-chips]');
+    if (!wrap) return;
+    var defId = E.defaultAccountId(S);
+    var want = S.accounts.map(function (a) {
+      return a ? a.id + '\u0002' + (a.name || '') + '\u0002' + a.kind : '';
+    }).join('\u0001');
+    if (wrap.dataset.built !== want) {   /* never rebuild mid-tap */
+      wrap.dataset.built = want;
+      var chips = [];
+      S.accounts.forEach(function (a) {
+        if (!a || a.kind === 'savings') return;
+        var isMain = a.id === defId;
+        chips.push('<button type="button" class="chip chip--acct acct-hue--' + accounts_hue(a.id) + '"'
+          + ' data-log-acct="' + (isMain ? '' : esc(a.id)) + '" aria-pressed="' + (isMain ? 'true' : 'false') + '">'
+          + esc(accounts_label(a)) + '</button>');
+      });
+      wrap.innerHTML = chips.join('');
+    }
+  }
+
+  /* The Today card. Each spending account's own "safe until payday", plus one
+     quiet line for savings. Row figures are the PERIOD number (the breakdown's
+     "Safe until payday"), not today's share — the card-meta says exactly that. */
+  function renderByAccount() {
+    var wrap = $('[data-byaccount]');
+    if (!wrap) return;
+    if (!S.ui || S.ui.accountsMode !== 'many') return;   /* card is CSS-hidden anyway */
+    var views = E.accountViews(S, TODAY);
+    /* One look-ahead pass for "next out": the earliest unpaid must-pay in the
+       next 45 days, per account. */
+    var nextOut = {};
+    E.allBillDates(S.bills, TODAY, E.addDays(TODAY, 45)).forEach(function (o) {
+      if (E.isPaid(o.bill, o.date)) return;
+      var owner = E.resolveAccountId(S, o.bill.accountId);
+      if (!nextOut[owner] || cmp2(o.date, nextOut[owner].date) < 0) {
+        nextOut[owner] = { name: o.bill.name, amount: o.bill.amount, date: o.date };
+      }
+    });
+    function cmp2(a, b) { return a < b ? -1 : a > b ? 1 : 0; }
+    var savingsCents = 0, savingsCount = 0;
+    var rows = [];
+    views.forEach(function (v) {
+      if (v.kind === 'savings') { savingsCents += v.balanceCents; savingsCount += 1; return; }
+      /* The meter is "how much of what this account holds is still yours":
+         safe cents against balance plus arrived money. Decorative — the
+         numbers beside it are the data. */
+      var pool = Math.max(1, v.balanceCents + v.moneyIn);
+      var pct = Math.max(0, Math.min(100, Math.round((v.cents / pool) * 100)));
+      var no = nextOut[v.id];
+      var noLine = no
+        ? '<p class="byacct-next">next out: ' + esc(no.name) + ' ' + esc(money(no.amount))
+          + ' on ' + esc(fmtDate(no.date)) + '</p>'
+        : '';
+      var shortNote = v.rawCents < 0
+        ? '<p class="byacct-short">' + esc(money(v.shortfallCents)) + ' short in this account</p>'
+        : '';
+      rows.push('<li class="byacct-row acct-hue--' + accounts_hue(v.id) + '">'
+        + '<p class="byacct-line">'
+        + '<span class="byacct-name"><i class="acct-dot" aria-hidden="true"></i>'
+        + esc(accounts_label(v)) + '</span>'
+        + '<span class="byacct-fig num">' + esc(money(v.cents)) + '</span>'
+        + '</p>'
+        + '<div class="byacct-meter" aria-hidden="true">'
+        + '<div class="byacct-meter-fill" style="width:' + pct + '%"></div></div>'
+        + noLine
+        + shortNote
+        + '</li>');
+    });
+    wrap.innerHTML = rows.join('');
+    var savLine = $('[data-byaccount-savings]');
+    if (savLine) {
+      savLine.hidden = !savingsCount;
+      if (savingsCount) {
+        savLine.textContent = 'In savings: ' + money(savingsCents)
+          + ' — listed, not counted in safe to spend.';
+      }
+    }
+  }
+
+  function renderAccounts() {
+    var wrap = $('[data-accounts-list]');
+    if (!wrap) return;
+    /* Never rebuild the list while the buyer is TYPING in it — the same rule
+       renderSettingsFields follows. Typing only: a focused button must not
+       hold the rebuild back, because in Chrome the Remove button keeps focus
+       after its click, and skipping the rebuild left the removed account's
+       row on screen as a ghost that swallowed keystrokes. */
+    var ae = document.activeElement;
+    var typing = ae && wrap.contains(ae) && (ae.tagName === 'INPUT' || ae.tagName === 'SELECT');
+    if (!typing) {
+      wrap.innerHTML = S.accounts.map(accounts_rowHtml).join('');
+    }
+    var b = $('[data-accounts-undo]');
+    if (b) {
+      b.hidden = !accounts_lastRemoved;
+      if (accounts_lastRemoved) {
+        b.textContent = 'Undo — bring back ' + accounts_label(accounts_lastRemoved.item);
+      }
+    }
+    renderAccountPickers();
+  }
+
+  function handleAccounts(t, ev) {
+    var act = t.dataset.action || '';
+    if (act.indexOf('accounts:') !== 0) return false;
+    void ev;
+    if (act === 'accounts:add') {
+      var added = { id: makeId('a'), name: '', kind: 'spending',
+                    balance: 0, balanceAsOf: null, balanceAsOfMs: null };
+      S.accounts.push(added);
+      save(); render();
+      say('Account added. Give it a name and type its balance.');
+      var el = $('[data-account-name="' + added.id + '"]');
+      if (el) el.focus();
+      return true;
+    }
+    if (act === 'accounts:remove') {
+      var rid = t.dataset.accountId;
+      var idx = -1;
+      for (var i = 0; i < S.accounts.length; i++) { if (S.accounts[i].id === rid) { idx = i; break; } }
+      if (idx < 0) return true;
+      var gone = S.accounts[idx];
+      /* Unmapped rows (accountId null) BELONG to the default account — their
+         "paid from" tags name it. Removing the default would silently move
+         all of them to whichever account becomes default next, so null rows
+         protect the default exactly like explicit mappings protect theirs.
+         `== null` on purpose: a freshly seeded file's rows do not pass
+         through normalize until the next load, so the key can be ABSENT —
+         undefined and null must both count. */
+      var isDefault = rid === E.defaultAccountId(S);
+      var mapped = S.bills.filter(function (b) {
+        return b.accountId === rid || (isDefault && b.accountId == null);
+      }).length;
+      if (mapped) {
+        say(mapped === 1
+          ? 'One must-pay is paid from this account. Move it to another account first, then remove this one.'
+          : mapped + ' must-pays are paid from this account. Move them to another account first, then remove this one.');
+        return true;
+      }
+      /* Money-in rows ADD to safe to spend; leaving one pointing at a removed
+         account would keep counting money whose account no longer exists.
+         Logged spending is history and only SUBTRACTS, so it never blocks. */
+      var inMapped = S.moneyIn.filter(function (m) {
+        return m.accountId === rid || (isDefault && m.accountId == null);
+      }).length;
+      if (inMapped) {
+        say('Money in is recorded as landing in this account. Edit those rows to another account first, then remove this one.');
+        return true;
+      }
+      var spendingLeft = S.accounts.filter(function (x, j) { return j !== idx && x.kind !== 'savings'; }).length;
+      if (gone.kind !== 'savings' && !spendingLeft) {
+        say('This is your only spending account, so it stays. Add another spending account first.');
+        return true;
+      }
+      S.accounts.splice(idx, 1);
+      accounts_lastRemoved = { item: gone, index: idx };
+      /* The Remove button keeps focus after its click in Chrome; blur it so
+         the typing guard cannot hold the removed row on screen as a ghost. */
+      if (document.activeElement && typeof document.activeElement.blur === 'function') {
+        document.activeElement.blur();
+      }
+      save(); render();
+      say(accounts_label(gone) + ' removed. Undo brings it back exactly as it was.');
+      return true;
+    }
+    if (act === 'accounts:undo') {
+      if (!accounts_lastRemoved) return true;
+      var back = accounts_lastRemoved;
+      accounts_lastRemoved = null;
+      /* Sync or a restored backup may already have brought this account back.
+         Splicing a second copy in would double its balance in safe to spend
+         and give two rows one id — never insert a duplicate. */
+      if (accounts_find(back.item.id)) {
+        render();
+        say(accounts_label(back.item) + ' is already here — another device or a backup brought it back.');
+        return true;
+      }
+      S.accounts.splice(Math.min(back.index, S.accounts.length), 0, back.item);
+      save(); render();
+      say(accounts_label(back.item) + ' is back. Nothing was lost.');
+      return true;
+    }
+    if (act === 'accounts:kind') {
+      var kid = t.dataset.accountId;
+      var acct = accounts_find(kid);
+      if (!acct) return true;
+      var next = t.value === 'savings' ? 'savings' : 'spending';
+      if (next === 'savings' && acct.kind !== 'savings') {
+        var others = S.accounts.filter(function (x) { return x.id !== kid && x.kind !== 'savings'; }).length;
+        if (!others) {
+          t.value = acct.kind;
+          say('This is your only spending account, so it stays a spending account. Add another one first.');
+          return true;
+        }
+        var kIsDefault = kid === E.defaultAccountId(S);
+        var kmapped = S.bills.filter(function (b) {
+            return b.accountId === kid || (kIsDefault && b.accountId == null);
+          }).length
+          + S.moneyIn.filter(function (m) {
+            return m.accountId === kid || (kIsDefault && m.accountId == null);
+          }).length;
+        if (kmapped) {
+          t.value = acct.kind;
+          say('Must-pays or money in still name this account. Move them to another account first, then make this one savings.');
+          return true;
+        }
+      }
+      acct.kind = next;
+      save(); render();
+      say(next === 'savings'
+        ? accounts_label(acct) + ' is a savings account now. Its balance is listed, not counted.'
+        : accounts_label(acct) + ' counts toward safe to spend now.');
+      return true;
+    }
+    return true;
   }
 
   /* ---------------------------------------------------------------- undo */
@@ -16552,7 +17412,7 @@ function a11yKey(ev) {
     if (id === 'log') { openSheet(t); return; }
     if (id === 'balance') {
       location.hash = '#screen-settings';
-      setTimeout(function () { var f = $('[data-field="checking"]'); if (f) f.focus(); }, 60);
+      setTimeout(function () { var f = $(checkingFieldSelector()); if (f) { f.scrollIntoView({ block: 'center' }); f.focus(); } }, 60);
       return;
     }
     say('That one takes care of itself — it is true when the numbers say so.');
@@ -16617,16 +17477,43 @@ function a11yKey(ev) {
       draft.note = String(logNote.value || '').slice(0, 80);
       return;
     }
+    var acctName = ev.target.closest('[data-account-name]');
+    if (acctName) {
+      var named = accounts_find(acctName.dataset.accountName);
+      if (named) {
+        named.name = String(acctName.value == null ? '' : acctName.value).trim().slice(0, 40);
+        save(); render();
+      }
+      return;
+    }
+    var acctBal = ev.target.closest('[data-account-balance]');
+    if (acctBal) {
+      var baled = accounts_find(acctBal.dataset.accountBalance);
+      if (baled) {
+        baled.balance = parseMoney(acctBal.value, S.profile.currency);
+        /* Each account carries its OWN "true as of" stamp — the per-account
+           view measures that account's bills and spends forward from it. */
+        baled.balanceAsOf = TODAY;
+        baled.balanceAsOfMs = Date.now();
+        save(); render();
+      }
+      return;
+    }
     var el = ev.target.closest('[data-field]');
     if (!el) return;
     var f = el.dataset.field, cur = S.profile.currency;
     if (f === 'checking') {
-      S.accounts[0].balance = parseMoney(el.value, cur);
+      /* The single-account field writes the DEFAULT spending account, which
+         for every file that has never touched multi-account is accounts[0].
+         (A file that once went multi-account may have made accounts[0] a
+         savings account; typing here must still move the hero.) */
+      var mainAcct = accounts_find(E.defaultAccountId(S)) || S.accounts[0];
+      mainAcct.balance = parseMoney(el.value, cur);
       /* Stamp WHEN this was true. safeToSpend measures every bill and spend
          forward from this day; without it the figure is a number with no date
          attached and the engine has to assume "now". */
-      S.accounts[0].balanceAsOf = TODAY;
-      S.accounts[0].balanceAsOfMs = Date.now();
+      mainAcct.balanceAsOf = TODAY;
+      mainAcct.balanceAsOfMs = Date.now();
     }
     else if (f === 'setAside') S.setAside = parseMoney(el.value, cur);
     else if (f === 'income') S.income[0] = { label: 'Paycheck', amount: parseMoney(el.value, cur) };
@@ -16705,6 +17592,7 @@ function a11yKey(ev) {
         if (!d || !d.profile) throw 0;
         S = normalize(d);
         exampleFingerprint = ownershipFingerprint(S);
+        accounts_lastRemoved = null;
         applyMode(); save(); render();
         say('Backup restored.');
       } catch (e) { banner('That file does not look like a ' + (P.name || 'valid') + ' backup.'); }
@@ -16776,7 +17664,7 @@ function a11yKey(ev) {
   function careReady() {
     if (S.seeded) return false;
     var checks = [
-      !!(S.accounts[0] && S.accounts[0].balance > 0),
+      S.accounts.some(function (a) { return a && a.kind !== 'savings' && a.balance > 0; }),
       !!(S.income[0] && S.income[0].amount > 0),
       !!S.profile.payAnchor,
       !!(S.bills && S.bills.length)
